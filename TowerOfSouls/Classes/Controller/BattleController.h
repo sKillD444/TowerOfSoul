@@ -1,0 +1,75 @@
+﻿#ifndef __BATTLE_CONTROLLER_H__
+#define __BATTLE_CONTROLLER_H__
+
+#include <iostream>
+using namespace std;
+#include "../GameData.h"
+#include "../Model/CardModel.h"
+
+enum class BattleState {
+    PLAYING,
+    WIN,
+    LOSE
+};
+
+class BattleController {
+public:
+    vector<BattleCardData> loadPlayerDeck() {
+        int currentUserId = 1; // TestUser trong DB của bạn
+        return CardModel::getInstance().getPlayerDeck(currentUserId);
+    }
+
+	vector<BattleCardData> getShopRoll() {
+        return CardModel::getInstance().getShopRoll();
+    }
+
+    bool buyCard(int userID, const BattleCardData& cardData) {
+        return CardModel::getInstance().buyCard(userID, cardData);
+    }
+
+	vector<BattleCardData> spawnEnemies(int count) {
+		return CardModel::getInstance().spawnEnemies(count);
+	}
+
+	BattleCardData getRNDCard(int cost) {
+		return CardModel::getInstance().getRNDCard(cost);
+	}
+
+	float culateDamage(const BattleCardData& attacker, const BattleCardData& defender) {
+		float dmg = attacker.atk;
+		if ((attacker.role == "Warrior" && defender.role == "Defender")
+			||(attacker.role == "Defender" && defender.role == "Assassin") 
+			||(attacker.role == "Assassin" && defender.role == "Ranged DPS")
+			||(attacker.role == "Ranged DPS" && defender.role == "Warrior")){
+			dmg=dmg * 1.3;
+		}
+		if((defender.role=="Warrior"&& attacker.role == "Defender")
+			||(defender.role == "Defender" && attacker.role == "Assassin")
+			||(defender.role == "Assassin" && attacker.role == "Ranged DPS")
+			||(defender.role == "Ranged DPS" && attacker.role == "Warrior"))
+			dmg = dmg * 0.7;
+		return dmg;
+	}
+
+	BattleState checkBattleState(int alivePlayers, int aliveEnemys) {
+		if (alivePlayers > 0 && aliveEnemys == 0) {
+			return BattleState::WIN;
+		}
+		else if (alivePlayers == 0 && aliveEnemys > 0) {
+			return BattleState::LOSE;
+		}
+		else {
+			return BattleState::PLAYING;
+		}
+	}
+
+	void updateStar(BattleCardData& card) {
+		if (card.star > 1) {
+			card.atk += 10 * card.star;
+			card.hp += 30 * card.star;
+			card.currentHp = card.hp;
+		}
+	}
+};
+
+#endif

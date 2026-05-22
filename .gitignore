@@ -1,0 +1,13 @@
+.vs/
+*.pdb
+*.idb
+*.ilk
+*.pch
+*.ipch
+*.sdf
+*.db
+*.suo
+*.user
+*.log
+Debug.win32/
+Release.win32/
