@@ -1,8 +1,9 @@
 ﻿#include "MenuScene.h"
+#include "PlayerHUD.h"
 
 USING_NS_CC;
 namespace L {
-	
+
 }
 Scene* MenuScene::createScene()
 {
@@ -30,7 +31,13 @@ bool MenuScene::init()
 	this->addChild(bg, static_cast<int>(ZOrder::BG));
 
 	this->createButtons();
-	
+	this->createUI();
+
+	auto hud = PlayerHUD::create();
+	this->addChild(hud, static_cast<int>(ZOrder::Info));
+
+	PlayerData p = _controller.loadPlayer();
+	hud->updatePlayerData(p);
 	// ==========================================
 	return true;
 }
@@ -45,15 +52,16 @@ void MenuScene::createButtons() {
 	campaignLabel->enableBold();
 	auto campainItem = MenuItemLabel::create(campaignLabel, [](Ref*) {
 
-	});
+		});
 	campainItem->setColor(Color3B(240, 235, 220));
 	campainItem->setPosition(Vec2(x, y));
 
 	auto EndlessLabel = Label::createWithTTF("Endless", "fonts/alagard.ttf", 14);
 	EndlessLabel->enableBold();
 	auto EndlessItem = MenuItemLabel::create(EndlessLabel, [](Ref*) {
-		
-	});
+		auto sceneEndless = BattleScene::createScene();
+		Director::getInstance()->replaceScene(TransitionFade::create(0.5f, sceneEndless, Color3B(0, 0, 0)));
+		});
 	EndlessItem->setColor(Color3B(240, 235, 220));
 	EndlessItem->setPosition(Vec2(x, y - 30.0f));
 
@@ -61,15 +69,15 @@ void MenuScene::createButtons() {
 	teamLabel->enableBold();
 	auto teamItem = MenuItemLabel::create(teamLabel, [](Ref*) {
 		
-	});
+		});
 	teamItem->setColor(Color3B(240, 235, 220));
 	teamItem->setPosition(Vec2(x, y - 60.0f));
-	
-	auto shopLabel =Label::createWithTTF("Shop", "fonts/alagard.ttf", 14);
+
+	auto shopLabel = Label::createWithTTF("Shop", "fonts/alagard.ttf", 14);
 	shopLabel->enableBold();
-	auto shopItem = MenuItemLabel::create(shopLabel, [] (Ref*){
+	auto shopItem = MenuItemLabel::create(shopLabel, [](Ref*) {
 		
-	});
+		});
 	shopItem->setColor(Color3B(240, 235, 220));
 	shopItem->setPosition(Vec2(x, y - 90.0f));
 
@@ -97,8 +105,25 @@ void MenuScene::createButtons() {
 	logOutItem->setColor(Color3B(240, 235, 220));
 	logOutItem->setPosition(Vec2(x, y - 180.0f));
 
-	auto menu = Menu::create(campainItem, EndlessItem, teamItem, shopItem, rankItem, settingItem, logOutItem,nullptr);
+	auto menu = Menu::create(campainItem, EndlessItem, teamItem, shopItem, rankItem, settingItem, logOutItem, nullptr);
 	menu->setPosition(Vec2::ZERO);
 	this->addChild(menu, static_cast<int>(ZOrder::Button));
+}
+
+void MenuScene::createUI() {
+	auto visibleSize = Director::getInstance()->getVisibleSize();
+	Vec2 origin = Director::getInstance()->getVisibleOrigin();
+
+	float menuBGWidth = visibleSize.width * 0.20f;
+	float menuBGHeight = visibleSize.height;
+	auto sideMenuBg = LayerGradient::create(Color4B(15, 20, 35, 240), Color4B(15, 20, 35, 0), Vec2(1, 0));
+	sideMenuBg->setContentSize(Size(menuBGWidth, menuBGHeight));
+	sideMenuBg->setPosition(Vec2::ZERO);
+	this->addChild(sideMenuBg, static_cast<int>(ZOrder::BGButton));
+
+	auto title = Sprite::create("UI/title.png");
+	title->setPosition(Vec2(origin.x + visibleSize.width * 0.75f, origin.y + visibleSize.height * 0.75f));
+	title->setScale(2.5f);
+	this->addChild(title, static_cast<int>(ZOrder::Lable));
 }
 

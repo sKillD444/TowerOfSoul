@@ -16,12 +16,14 @@ bool PlayerHUD::init()
 	float x = origin.x + visibleSize.width * 0.85f;
 	float y = origin.y + visibleSize.height * 0.95f;
 
+	//NAME
 	nameLabel = Label::createWithTTF("", "fonts/04B_03__.ttf", 10);
 	nameLabel->setPosition(Vec2(origin.x + visibleSize.width * 0.1f, y));
 	nameLabel->setTextColor(Color4B(255, 255, 255, 200));
 	nameLabel->enableOutline(Color4B::BLACK, 2);
 	this->addChild(nameLabel);
 
+	//GOLD
 	goldLabel = Label::createWithTTF("", "fonts/04B_03__.ttf", 8);
 	goldLabel->setColor(Color3B::YELLOW);
 	goldLabel->setPosition(Vec2(x, y));
@@ -33,6 +35,7 @@ bool PlayerHUD::init()
 	goldIcon->setScale(2.5);
 	this->addChild(goldIcon);
 
+	//GEM 
 	gemLabel = Label::createWithTTF("", "fonts/04B_03__.ttf", 8);
 	gemLabel->setColor(Color3B(255, 150, 255));
 	gemLabel->setPosition(Vec2(x + 40.0f, y));

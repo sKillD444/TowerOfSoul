@@ -39,7 +39,6 @@ Scene* BattleScene::createScene()
 	return BattleScene::create();
 }
 
-
 bool BattleScene::init()
 {
 	if (!Scene::init())
@@ -76,7 +75,7 @@ bool BattleScene::init()
 	this->createLogBattle();
 	_logBattleLayer->setVisible(false);
 
-
+	//Bg
 	auto bg = Sprite::create("BG/Background.png");
 	bg->setPosition(Vec2(L::SceneCenter_X, L::SceneCenter_Y));
 	auto bgSize = bg->getContentSize();
@@ -99,9 +98,10 @@ bool BattleScene::init()
 	return true;
 }
 
+// Create UI
+
 void BattleScene::createUI() {
 	//LABEL
-
 	_infoLabel = Label::createWithTTF("", "fonts/Marker Felt.ttf", 16);
 	_infoLabel->setPosition(Vec2(L::SceneCenter_X, L::SceneCenter_Y));
 	_infoLabel->setColor(Color3B::WHITE);
@@ -118,11 +118,9 @@ void BattleScene::createUI() {
 	_uiLayer->addChild(_coinLabel, static_cast<int>(ZOrder::UI), "coinLabel");
 
 	//BUTTON
-
 	auto btnStart = Sprite::create("UI/btnStart.png");
 	btnStart->setPosition(Vec2(L::BtnStart_X, L::BtnStart_Y));
 	_uiLayer->addChild(btnStart, static_cast<int>(ZOrder::UI), "btnStart");
-
 
 	auto btnShop = Sprite::create("UI/btnShop.png");
 	btnShop->setPosition(Vec2(L::BtnShop_X, L::BtnShop_Y));
@@ -338,6 +336,8 @@ void BattleScene::createLogBattle() {
 	_logBattleLayer->addChild(scrollView, static_cast<int>(ZOrder::Notification), "infoScrollView");
 }
 
+//Event Touch
+
 void BattleScene::setUpTouchListener() {
 	auto touchListener = EventListenerTouchOneByOne::create();
 	touchListener->setSwallowTouches(true);
@@ -435,7 +435,9 @@ bool BattleScene::onTouchBegan(cocos2d::Touch* touch, cocos2d::Event* event) {
 								arrLabelCoin[&slotShop - &ShopSlots[0]]->setString("");
 								arrIconCoin[&slotShop - &ShopSlots[0]]->setVisible(false);
 
-								mergeCard(slotD);
+								if (slotD.data.star < 4) {
+									mergeCard(slotD);
+								}
 							}
 							break;
 						}
@@ -616,14 +618,7 @@ void BattleScene::onTouchEnd(cocos2d::Touch* touch, cocos2d::Event* event) {
 	selectedCard = nullptr;
 }
 
-int BattleScene::countUnitsOnBoard() {
-	int count = 0;
-	for (const auto& slot : playerSlots) {
-		if (!slot.isEmpty) count++;
-	}
-	return count;
-}
-
+//Game Logic
 void BattleScene::startNewRound() {
 	_round++;
 	_infoLabel->setString("Round " + std::to_string(_round));
@@ -688,6 +683,145 @@ void BattleScene::endBattle() {
 	}
 }
 
+void BattleScene::endGame() {
+	if (selectedCard != nullptr) {
+		selectedCard->setLocalZOrder(static_cast<int>(ZOrder::Character));
+		selectedCard = nullptr;
+	}
+
+	_btnShopEnabled = true;
+	_btnPlayEnabled = true;
+	_isBattle = false;
+
+	_infoLabel->setString("");
+	_shopLayer->setVisible(true);
+	this->unscheduleUpdate();
+
+	_currentAttackerIndex = 0;
+	_coins = 5;
+	_coinLabel->setString(std::to_string(_coins));
+	_round = 0;
+
+	for (auto& slot : playerSlots) {
+		slot.isEmpty = true;
+		if (slot.card != nullptr) {
+			slot.card->removeFromParent();
+			slot.card = nullptr;
+		}
+		slot.data = BattleCardData();
+	}
+	for (auto& slot : deckSlots) {
+		slot.isEmpty = true;
+		if (slot.card != nullptr) {
+			slot.card->removeFromParent();
+			slot.card = nullptr;
+		}
+		slot.data = BattleCardData();
+	}
+	loadCardShop();
+	spawnEnemies();
+}
+
+//Card Management
+int BattleScene::countUnitsOnBoard() {
+	int count = 0;
+	for (const auto& slot : playerSlots) {
+		if (!slot.isEmpty) count++;
+	}
+	return count;
+}
+
+int BattleScene::countCard(BattleCardData data) {
+	int count = 0;
+	for (auto slot : playerSlots) {
+		if (!slot.isEmpty && slot.card != nullptr && slot.data.card_id == data.card_id && slot.data.star == data.star)
+			count++;
+	}
+	for (auto slot : deckSlots) {
+		if (!slot.isEmpty && slot.card != nullptr && slot.data.card_id == data.card_id && slot.data.star == data.star)
+			count++;
+	}
+	return count;
+}
+
+void BattleScene::mergeCard(Slot& card) {
+	string targetId = card.data.card_id;
+	int targetStar = card.data.star;
+	if (countCard(card.data) < 3)return;
+	bool flag = true;
+	int count = 0;
+	Slot* upgradedSlot = nullptr;
+	for (auto& slot : playerSlots) {
+		if (count > 2)break;
+		if (!slot.isEmpty && slot.card != nullptr && slot.data.card_id == targetId && slot.data.star == targetStar) {
+			if (flag) {
+				slot.data.star++;
+				_controller.updateStar(slot.data);
+				slot.card->updateStats(slot.data.currentHp, slot.data.atk);
+				slot.card->upStar(slot.data.star);
+				count++;
+				upgradedSlot = &slot;
+				flag = false;
+			}
+			else {
+				slot.card->removeFromParentAndCleanup(true);
+				slot.card = nullptr;
+				slot.isEmpty = true;
+				count++;
+			}
+		}
+	}
+	for (auto& slot : deckSlots) {
+		if (count > 2)break;
+		if (!slot.isEmpty && slot.card != nullptr && slot.data.card_id == targetId && slot.data.star == targetStar) {
+			if (flag) {
+				slot.data.star++;
+				_controller.updateStar(slot.data);
+				slot.card->updateStats(slot.data.currentHp, slot.data.atk);
+				slot.card->upStar(slot.data.star);
+				count++;
+				upgradedSlot = &slot;
+				flag = false;
+			}
+			else {
+				slot.card->removeFromParentAndCleanup(true);
+				slot.card = nullptr;
+				slot.isEmpty = true;
+				count++;
+			}
+		}
+	}
+	if (upgradedSlot != nullptr && upgradedSlot->data.star < 3) {
+		mergeCard(*upgradedSlot);
+	}
+}
+
+bool BattleScene::deleteCard(CardNode* select, BattleCardData data) {
+	Vec2 originDelete = Vec2(L::OriginDeck.x - 30.0f, L::OriginDeck.y);
+	Vec2 destinationDelete = Vec2(L::OriginDeck.x, L::DestinationDeck.y);
+	float width = destinationDelete.x - originDelete.x;
+	float height = destinationDelete.y - originDelete.y;
+	Rect deleteZone(originDelete.x, originDelete.y, width, height);
+	Rect deleteZone2(originDelete.x + 445, originDelete.y, width, height);
+	if (deleteZone.containsPoint(select->getPosition()) || deleteZone2.containsPoint(select->getPosition())) {
+		_coins += data.cost;
+		_coinLabel->setString(std::to_string(_coins));
+		select->removeFromParentAndCleanup(true);
+		return 1;
+	}
+	return 0;
+}
+
+void BattleScene::swapCard(Slot& selectCard, Slot& card) {
+	swap(selectCard.data, card.data);
+	swap(selectCard.card, card.card);
+	auto selectCardMove = MoveTo::create(0.3f, selectCard.pos);
+	auto cardMove = MoveTo::create(0.3f, card.pos);
+	selectCard.card->runAction(selectCardMove);
+	card.card->runAction(cardMove);
+}
+
+//Battle Logic
 void BattleScene::loadCardShop() {
 	for (auto& slotS : ShopSlots) {
 		if (!slotS.isEmpty && slotS.card != nullptr) {
@@ -711,6 +845,62 @@ void BattleScene::loadCardShop() {
 			slotS.isEmpty = false;
 			slotS.data = shopData[i];
 		}
+	}
+}
+
+void BattleScene::highLightLine(bool flag) {
+	for (int i = 0; i < 12; i++) {
+		string str = "deck_draw_" + to_string(i);
+		auto drawDeck = dynamic_cast<DrawNode*>(this->getChildByName(str));
+		if (drawDeck != nullptr) {
+			drawDeck->clear();
+			float x = 68 + i * (L::CELL_W + L::GAP);
+			float y = 57;
+			Vec2 origin = Vec2(x - L::CELL_W / 2, y - L::CELL_H / 2);
+			Vec2 destination = Vec2(x + L::CELL_W / 2, y + L::CELL_H / 2);
+			if (flag) {
+				drawDeck->drawSolidRect(origin, destination, Color4F(1.0f, 1.0f, 1.0f, 0.1f));
+				drawDeck->drawRect(origin, destination, Color4F(1, 1, 1, 1.0f));
+			}
+			else {
+				drawDeck->drawSolidRect(origin, destination, Color4F(1.0f, 1.0f, 1.0f, 0.1f));
+				drawDeck->drawRect(origin, destination, Color4F(1, 1, 1, 0.3f));
+			}
+		}
+	}
+	for (int r = 0; r < 3; r++) {
+		for (int c = 0; c < 3; c++) {
+			string str = "grid_draw_" + to_string(r) + "_" + to_string(c);
+			auto drawGrid = dynamic_cast<DrawNode*>(this->getChildByName(str));
+			if (drawGrid != nullptr) {
+				drawGrid->clear();
+				float x = L::PlayerPos.x + c * (L::CELL_W + L::GAP);
+				float y = L::PlayerPos.y - r * (L::CELL_H + L::GAP);
+				Vec2 origin = Vec2(x - L::CELL_W / 2, y - L::CELL_H / 2);
+				Vec2 destination = Vec2(x + L::CELL_W / 2, y + L::CELL_H / 2);
+				if (flag) {
+					drawGrid->drawSolidRect(origin, destination, Color4F(0, 0, 1, 0.1f));
+					drawGrid->drawRect(origin, destination, Color4F(0, 0.5f, 1, 1.0f));
+				}
+				else {
+					drawGrid->drawSolidRect(origin, destination, Color4F(0, 0, 1, 0.1f));
+					drawGrid->drawRect(origin, destination, Color4F(0, 0.5f, 1, 0.3f));
+				}
+			}
+		}
+	}
+	auto drawDelete = dynamic_cast<DrawNode*>(this->getChildByName("delete_draw"));
+	if (flag) {
+		Vec2 originDelete = Vec2(L::OriginDeck.x - 30.0f, L::OriginDeck.y);
+		Vec2 destinationDelete = Vec2(L::OriginDeck.x, L::DestinationDeck.y);
+		drawDelete->drawSolidRect(originDelete, destinationDelete, Color4F(1, 0, 0, 0.5f));
+		drawDelete->drawRect(originDelete, destinationDelete, Color4F(1, 0.2f, 0.2f, 1.0f));
+		drawDelete->drawSolidRect(originDelete + Vec2(445, 0), destinationDelete + Vec2(470, 0), Color4F(1, 0, 0, 0.5f));
+		drawDelete->drawRect(originDelete + Vec2(445, 0), destinationDelete + Vec2(470, 0), Color4F(1, 0.2f, 0.2f, 1.0f));
+	}
+	else {
+		drawDelete->clear();
+		drawDelete->removeAllChildren();
 	}
 }
 
@@ -757,6 +947,92 @@ void BattleScene::spawnEnemies() {
 			slotE.data = enemies[i];
 		}
 	}
+}
+
+BattleScene::Slot* BattleScene::findTarget(std::vector<Slot>& targetSlots, Slot& attacker) {
+	Slot* bestTarget = nullptr;
+	float bestDist = 99999.0f;
+
+	if (!attacker.card) return nullptr;
+	Vec2 attackerPos = attacker.pos;
+
+	for (auto& slot : targetSlots) {
+		if (!slot.isEmpty && slot.card != nullptr && slot.data.currentHp > 0) {
+			float dist = attackerPos.distance(slot.pos);
+			if (dist < bestDist) {
+				bestDist = dist;
+				bestTarget = &slot;
+			}
+		}
+	}
+	return bestTarget;
+}
+
+float BattleScene::synergyAtkMult(std::string role) {
+	int dem = 0;
+	for (auto& p : playerSlots) {
+		if (p.data.role == role)
+			dem++;
+	}
+	if (dem > 5)
+		return 20;
+	else if (dem > 4)
+		return 15;
+	else if (dem > 3)
+		return 10;
+	else if (dem > 2)
+		return 5;
+	return 0;
+}
+
+float BattleScene::culateAllDamage(Slot& attacker, Slot& target, bool isPlayerAttacking) {
+	float dmg = _controller.culateDamage(attacker.data, target.data);
+	if (isPlayerAttacking) {
+		dmg += synergyAtkMult(attacker.data.role);
+	}
+	else
+	{
+		dmg += dmg * (_round / 10);
+	}
+	return dmg;
+}
+
+void BattleScene::doAttack(Slot& attacker, Slot& target, bool isPlayerAttacking) {
+	if (!attacker.card || !target.card) return;
+
+	float dmg = culateAllDamage(attacker, target, isPlayerAttacking);
+
+	target.data.currentHp -= dmg;
+
+
+	target.card->updateStats(target.data.currentHp, target.data.atk);
+
+	attacker.card->playLungeAnimation(target.pos, attacker.pos);
+	target.card->playHitAnimation(target.pos);
+
+	auto dmgLabel = Label::createWithTTF("-" + std::to_string((int)dmg), "fonts/Marker Felt.ttf", 16);
+	if (dmgLabel) {
+		dmgLabel->setPosition(target.pos + Vec2(0, 20));
+		dmgLabel->setTextColor(Color4B::RED);
+		dmgLabel->enableOutline(Color4B::BLACK, 1);
+		this->addChild(dmgLabel, static_cast<int>(ZOrder::Notification));
+
+		auto floatUp = MoveBy::create(0.7f, Vec2(0, 24));
+		auto fadeOut = FadeOut::create(0.7f);
+		dmgLabel->runAction(Sequence::create(
+			Spawn::create(floatUp, fadeOut, nullptr),
+			RemoveSelf::create(),
+			nullptr
+		));
+	}
+
+	const char* side = isPlayerAttacking ? "PLAYER" : "ENEMY";
+	string log = string("[") + side + "] "
+		+ attacker.data.name + " danh "
+		+ target.data.name + ": Mat "
+		+ to_string((int)dmg) + " mau. Dich con "
+		+ to_string((int)target.data.currentHp) + " mau!\n\n";
+	_logBattle += log;
 }
 
 void BattleScene::update(float dt) {
@@ -859,273 +1135,6 @@ void BattleScene::update(float dt) {
 	}
 }
 
-float BattleScene::synergyAtkMult(std::string role) {
-	int dem = 0;
-	for (auto& p : playerSlots) {
-		if (p.data.role == role)
-			dem++;
-	}
-	if (dem > 5)
-		return 20;
-	else if (dem > 4)
-		return 15;
-	else if (dem > 3)
-		return 10;
-	else if (dem > 2)
-		return 5;
-	return 0;
-}
-
-void BattleScene::highLightLine(bool flag) {
-	for (int i = 0; i < 12; i++) {
-		string str = "deck_draw_" + to_string(i);
-		auto drawDeck = dynamic_cast<DrawNode*>(this->getChildByName(str));
-		if (drawDeck != nullptr) {
-			drawDeck->clear();
-			float x = 68 + i * (L::CELL_W + L::GAP);
-			float y = 57;
-			Vec2 origin = Vec2(x - L::CELL_W / 2, y - L::CELL_H / 2);
-			Vec2 destination = Vec2(x + L::CELL_W / 2, y + L::CELL_H / 2);
-			if (flag) {
-				drawDeck->drawSolidRect(origin, destination, Color4F(1.0f, 1.0f, 1.0f, 0.1f));
-				drawDeck->drawRect(origin, destination, Color4F(1, 1, 1, 1.0f));
-			}
-			else {
-				drawDeck->drawSolidRect(origin, destination, Color4F(1.0f, 1.0f, 1.0f, 0.1f));
-				drawDeck->drawRect(origin, destination, Color4F(1, 1, 1, 0.3f));
-			}
-		}
-	}
-	for (int r = 0; r < 3; r++) {
-		for (int c = 0; c < 3; c++) {
-			string str = "grid_draw_" + to_string(r) + "_" + to_string(c);
-			auto drawGrid = dynamic_cast<DrawNode*>(this->getChildByName(str));
-			if (drawGrid != nullptr) {
-				drawGrid->clear();
-				float x = L::PlayerPos.x + c * (L::CELL_W + L::GAP);
-				float y = L::PlayerPos.y - r * (L::CELL_H + L::GAP);
-				Vec2 origin = Vec2(x - L::CELL_W / 2, y - L::CELL_H / 2);
-				Vec2 destination = Vec2(x + L::CELL_W / 2, y + L::CELL_H / 2);
-				if (flag) {
-					drawGrid->drawSolidRect(origin, destination, Color4F(0, 0, 1, 0.1f));
-					drawGrid->drawRect(origin, destination, Color4F(0, 0.5f, 1, 1.0f));
-				}
-				else {
-					drawGrid->drawSolidRect(origin, destination, Color4F(0, 0, 1, 0.1f));
-					drawGrid->drawRect(origin, destination, Color4F(0, 0.5f, 1, 0.3f));
-				}
-			}
-		}
-	}
-	auto drawDelete = dynamic_cast<DrawNode*>(this->getChildByName("delete_draw"));
-	if (flag) {
-		Vec2 originDelete = Vec2(L::OriginDeck.x - 30.0f, L::OriginDeck.y);
-		Vec2 destinationDelete = Vec2(L::OriginDeck.x, L::DestinationDeck.y);
-		drawDelete->drawSolidRect(originDelete, destinationDelete, Color4F(1, 0, 0, 0.5f));
-		drawDelete->drawRect(originDelete, destinationDelete, Color4F(1, 0.2f, 0.2f, 1.0f));
-		drawDelete->drawSolidRect(originDelete + Vec2(445, 0), destinationDelete + Vec2(470, 0), Color4F(1, 0, 0, 0.5f));
-		drawDelete->drawRect(originDelete + Vec2(445, 0), destinationDelete + Vec2(470, 0), Color4F(1, 0.2f, 0.2f, 1.0f));
-	}
-	else {
-		drawDelete->clear();
-		drawDelete->removeAllChildren();
-	}
-}
-
-BattleScene::Slot* BattleScene::findTarget(std::vector<Slot>& targetSlots, Slot& attacker) {
-	Slot* bestTarget = nullptr;
-	float bestDist = 99999.0f;
-
-	if (!attacker.card) return nullptr;
-	Vec2 attackerPos = attacker.pos;
-
-	for (auto& slot : targetSlots) {
-		if (!slot.isEmpty && slot.card != nullptr && slot.data.currentHp > 0) {
-			float dist = attackerPos.distance(slot.pos);
-			if (dist < bestDist) {
-				bestDist = dist;
-				bestTarget = &slot;
-			}
-		}
-	}
-	return bestTarget;
-}
-
-void BattleScene::doAttack(Slot& attacker, Slot& target, bool isPlayerAttacking) {
-	if (!attacker.card || !target.card) return;
-
-	float dmg = culateAllDamage(attacker, target, isPlayerAttacking);
-
-	target.data.currentHp -= dmg;
 
 
-	target.card->updateStats(target.data.currentHp, target.data.atk);
 
-	attacker.card->playLungeAnimation(target.pos, attacker.pos);
-	target.card->playHitAnimation(target.pos);
-
-	auto dmgLabel = Label::createWithTTF("-" + std::to_string((int)dmg), "fonts/Marker Felt.ttf", 16);
-	if (dmgLabel) {
-		dmgLabel->setPosition(target.pos + Vec2(0, 20));
-		dmgLabel->setTextColor(Color4B::RED);
-		dmgLabel->enableOutline(Color4B::BLACK, 1);
-		this->addChild(dmgLabel, static_cast<int>(ZOrder::Notification));
-
-		auto floatUp = MoveBy::create(0.7f, Vec2(0, 24));
-		auto fadeOut = FadeOut::create(0.7f);
-		dmgLabel->runAction(Sequence::create(
-			Spawn::create(floatUp, fadeOut, nullptr),
-			RemoveSelf::create(),
-			nullptr
-		));
-	}
-
-	const char* side = isPlayerAttacking ? "PLAYER" : "ENEMY";
-	string log = string("[") + side + "] "
-		+ attacker.data.name + " danh "
-		+ target.data.name + ": Mat "
-		+ to_string((int)dmg) + " mau. Dich con "
-		+ to_string((int)target.data.currentHp) + " mau!\n\n";
-	_logBattle += log;
-}
-
-float BattleScene::culateAllDamage(Slot& attacker, Slot& target, bool isPlayerAttacking) {
-	float dmg = _controller.culateDamage(attacker.data, target.data);
-	if (isPlayerAttacking) {
-		dmg += synergyAtkMult(attacker.data.role);
-	}
-	else
-	{
-		dmg += dmg * (_round / 10);
-	}
-	return dmg;
-}
-
-bool BattleScene::deleteCard(CardNode* select, BattleCardData data) {
-	Vec2 originDelete = Vec2(L::OriginDeck.x - 30.0f, L::OriginDeck.y);
-	Vec2 destinationDelete = Vec2(L::OriginDeck.x, L::DestinationDeck.y);
-	float width = destinationDelete.x - originDelete.x;
-	float height = destinationDelete.y - originDelete.y;
-	Rect deleteZone(originDelete.x, originDelete.y, width, height);
-	Rect deleteZone2(originDelete.x + 445, originDelete.y, width, height);
-	if (deleteZone.containsPoint(select->getPosition()) || deleteZone2.containsPoint(select->getPosition())) {
-		_coins += data.cost;
-		_coinLabel->setString(std::to_string(_coins));
-		select->removeFromParentAndCleanup(true);
-		return 1;
-	}
-	return 0;
-}
-
-int BattleScene::countCard(BattleCardData data) {
-	int count = 0;
-	for (auto slot : playerSlots) {
-		if (!slot.isEmpty && slot.card != nullptr && slot.data.card_id == data.card_id && slot.data.star == data.star)
-			count++;
-	}
-	for (auto slot : deckSlots) {
-		if (!slot.isEmpty && slot.card != nullptr && slot.data.card_id == data.card_id && slot.data.star == data.star)
-			count++;
-	}
-	return count;
-}
-
-void BattleScene::mergeCard(Slot& card) {
-	string targetId = card.data.card_id;
-	int targetStar = card.data.star;
-	if (countCard(card.data) < 3)return;
-	bool flag = true;
-	int count = 0;
-	Slot* upgradedSlot = nullptr;
-	for (auto& slot : playerSlots) {
-		if (count > 2)break;
-		if (!slot.isEmpty && slot.card != nullptr && slot.data.card_id == targetId && slot.data.star == targetStar) {
-			if (flag) {
-				slot.data.star++;
-				_controller.updateStar(slot.data);
-				slot.card->updateStats(slot.data.currentHp, slot.data.atk);
-				slot.card->upStar(slot.data.star);
-				count++;
-				upgradedSlot = &slot;
-				flag = false;
-			}
-			else {
-				slot.card->removeFromParentAndCleanup(true);
-				slot.card = nullptr;
-				slot.isEmpty = true;
-				count++;
-			}
-		}
-	}
-	for (auto& slot : deckSlots) {
-		if (count > 2)break;
-		if (!slot.isEmpty && slot.card != nullptr && slot.data.card_id == targetId && slot.data.star == targetStar) {
-			if (flag) {
-				slot.data.star++;
-				_controller.updateStar(slot.data);
-				slot.card->updateStats(slot.data.currentHp, slot.data.atk);
-				slot.card->upStar(slot.data.star);
-				count++;
-				upgradedSlot = &slot;
-				flag = false;
-			}
-			else {
-				slot.card->removeFromParentAndCleanup(true);
-				slot.card = nullptr;
-				slot.isEmpty = true;
-				count++;
-			}
-		}
-	}
-	if (upgradedSlot != nullptr && upgradedSlot->data.star < 3) {
-		mergeCard(*upgradedSlot);
-	}
-}
-
-void BattleScene::swapCard(Slot& selectCard, Slot& card) {
-	swap(selectCard.data, card.data);
-	swap(selectCard.card, card.card);
-	auto selectCardMove = MoveTo::create(0.3f, selectCard.pos);
-	auto cardMove = MoveTo::create(0.3f, card.pos);
-	selectCard.card->runAction(selectCardMove);
-	card.card->runAction(cardMove);
-}
-
-void BattleScene::endGame() {
-	if (selectedCard != nullptr) {
-		selectedCard->setLocalZOrder(static_cast<int>(ZOrder::Character));
-		selectedCard = nullptr;
-	}
-
-	_btnShopEnabled = true;
-	_btnPlayEnabled = true;
-	_isBattle = false;
-
-	_infoLabel->setString("");
-	_shopLayer->setVisible(true);
-	this->unscheduleUpdate();
-
-	_currentAttackerIndex = 0;
-	_coins = 5;
-	_coinLabel->setString(std::to_string(_coins));
-	_round = 0;
-
-	for (auto& slot : playerSlots) {
-		slot.isEmpty = true;
-		if (slot.card != nullptr) {
-			slot.card->removeFromParent();
-			slot.card = nullptr;
-		}
-		slot.data = BattleCardData();
-	}
-	for (auto& slot : deckSlots) {
-		slot.isEmpty = true;
-		if (slot.card != nullptr) {
-			slot.card->removeFromParent();
-			slot.card = nullptr;
-		}
-		slot.data = BattleCardData();
-	}
-	loadCardShop();
-	spawnEnemies();
-}

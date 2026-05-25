@@ -4,7 +4,8 @@
 #include "cocos2d.h"
 #include <iostream>
 #include "ui/CocosGUI.h"
-
+#include "View/BattleScene.h"
+#include "Controller/PlayerController.h"
 
 using namespace std;
 
@@ -14,13 +15,14 @@ public:
 	static cocos2d::Scene* createScene();
 	enum class ZOrder
 	{
-		BG, BGButton,Button,Lable,Info
+		BG, BGButton, Button, Lable, Info
 	};
 	virtual bool init() override;
 private:
+	PlayerController _controller;
 
 	void createButtons();
-
+	void createUI();
 	CREATE_FUNC(MenuScene);
 };
 

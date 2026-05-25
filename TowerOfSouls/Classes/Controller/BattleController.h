@@ -15,8 +15,7 @@ enum class BattleState {
 class BattleController {
 public:
     vector<BattleCardData> loadPlayerDeck() {
-        int currentUserId = 1; // TestUser trong DB của bạn
-        return CardModel::getInstance().getPlayerDeck(currentUserId);
+        return CardModel::getInstance().getPlayerDeck(1);
     }
 
 	vector<BattleCardData> getShopRoll() {
@@ -64,9 +63,14 @@ public:
 	}
 
 	void updateStar(BattleCardData& card) {
-		if (card.star > 1) {
+		if (card.star == 2) {
 			card.atk += 10 * card.star;
 			card.hp += 30 * card.star;
+			card.currentHp = card.hp;
+		}
+		else if (card.star == 3) {
+			card.atk += 30 * card.star;
+			card.hp += 80 * card.star;
 			card.currentHp = card.hp;
 		}
 	}

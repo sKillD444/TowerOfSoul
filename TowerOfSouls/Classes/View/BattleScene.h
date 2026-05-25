@@ -41,27 +41,33 @@ public:
 
 private:
 	BattleController _controller;
+
+	//Layers
 	cocos2d::Node* _uiLayer;
 	cocos2d::Node* _shopLayer = nullptr;
 	cocos2d::Node* _settingLayer = nullptr;
 	cocos2d::Node* _logBattleLayer = nullptr;
-	CardNode* selectedCard = nullptr;
-	BattleCardData selectedData;
+	
+	//Label
 	cocos2d::Label* _infoLabel = nullptr;
 	cocos2d::Label* _logLabel = nullptr;
 	cocos2d::Label* _coinLabel = nullptr;
 	cocos2d::Label* _resultLabel = nullptr;
 	std::vector<cocos2d::Label*> arrLabelCoin;
+
+	CardNode* selectedCard = nullptr;
+	BattleCardData selectedData;
 	std::vector<cocos2d::Sprite*> arrIconCoin;
 
 	int _coins = 0;
 	int _round =0;
-	bool _isBattle = false;
 	int _currentAttackerIndex = 0;
+	bool _isBattle = false;
 	bool _isPlayerTurn = true;
 	string _logBattle = "";
 	float _turnTimer = 0.5f;
 
+	//Create UI
 	void createUI();
 	void createGrid3x3(cocos2d::Vec2 startPos, bool isPlayer);
 	void createDeck();
@@ -69,27 +75,29 @@ private:
 	void createSetting();
 	void createLogBattle();
 
-
+	//Game Logic
 	void startNewRound();
 	void startBattle();
 	void endBattle();
 	void endGame();
-
-	void loadCardShop();
-	void spawnEnemies();
-	bool deleteCard(CardNode* select, BattleCardData data);
-	void highLightLine(bool flag);
+	
+	//Card Management
+	int countUnitsOnBoard();
 	int countCard(BattleCardData data);
 	void mergeCard(Slot& card);
+	bool deleteCard(CardNode* select, BattleCardData data);
 	void swapCard(Slot& selectCard, Slot& Card);
-	int countUnitsOnBoard();
 
+	//Battle Logic
+	void loadCardShop();
+	void highLightLine(bool flag);
+	void spawnEnemies();
 	Slot* findTarget(std::vector<Slot>& targetSlots, Slot& attacker);
-	void doAttack(Slot& attacker, Slot& target, bool isPlayerAttacking);
 	float synergyAtkMult(std::string role);
 	float culateAllDamage(Slot& attacker, Slot& target, bool isPlayerAttacking);
+	void doAttack(Slot& attacker, Slot& target, bool isPlayerAttacking);
 	
-
+	//Event Touch
 	void setUpTouchListener();
 	bool onTouchBegan(cocos2d::Touch* touch, cocos2d::Event* event);
 	void onTouchMove(cocos2d::Touch* touch, cocos2d::Event* event);
