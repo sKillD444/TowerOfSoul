@@ -121,9 +121,5 @@ void MenuScene::createUI() {
 	sideMenuBg->setPosition(Vec2::ZERO);
 	this->addChild(sideMenuBg, static_cast<int>(ZOrder::BGButton));
 
-	auto title = Sprite::create("UI/title.png");
-	title->setPosition(Vec2(origin.x + visibleSize.width * 0.75f, origin.y + visibleSize.height * 0.75f));
-	title->setScale(2.5f);
-	this->addChild(title, static_cast<int>(ZOrder::Lable));
 }
 

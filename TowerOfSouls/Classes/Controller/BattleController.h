@@ -64,13 +64,13 @@ public:
 
 	void updateStar(BattleCardData& card) {
 		if (card.star == 2) {
-			card.atk += 10 * card.star;
-			card.hp += 30 * card.star;
+			card.atk += 10;
+			card.hp += 30;
 			card.currentHp = card.hp;
 		}
 		else if (card.star == 3) {
-			card.atk += 30 * card.star;
-			card.hp += 80 * card.star;
+			card.atk += 30;
+			card.hp += 80;
 			card.currentHp = card.hp;
 		}
 	}

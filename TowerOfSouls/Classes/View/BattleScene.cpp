@@ -51,7 +51,7 @@ bool BattleScene::init()
 	// ==========================================
 
 	//Layer
-	_coins = 1000;
+	_coins = 5;
 	_uiLayer = Node::create();
 	this->addChild(_uiLayer, static_cast<int>(ZOrder::UI), "uiLayer");
 	this->createUI();
@@ -430,8 +430,10 @@ bool BattleScene::onTouchBegan(cocos2d::Touch* touch, cocos2d::Event* event) {
 								slotShop.card->removeFromParent();
 								slotShop.card = nullptr;
 								slotShop.isEmpty = true;
+
 								_coins -= slotShop.data.cost;
 								_coinLabel->setString(std::to_string(_coins));
+
 								arrLabelCoin[&slotShop - &ShopSlots[0]]->setString("");
 								arrIconCoin[&slotShop - &ShopSlots[0]]->setVisible(false);
 
@@ -514,6 +516,8 @@ void BattleScene::onTouchEnd(cocos2d::Touch* touch, cocos2d::Event* event) {
 	if (!selectedCard) return;
 	bool placed = false;
 	highLightLine(false);
+
+	//DeleteCard
 	if (deleteCard(selectedCard, selectedData)) {
 		selectedCard = nullptr;
 		return;
@@ -975,7 +979,7 @@ float BattleScene::synergyAtkMult(std::string role) {
 			dem++;
 	}
 	if (dem > 5)
-		return 20;
+		return 25 ;
 	else if (dem > 4)
 		return 15;
 	else if (dem > 3)
@@ -1108,18 +1112,28 @@ void BattleScene::update(float dt) {
 	if (_turnTimer > 0) return;
 
 	bool attackExecuted = false;
-	while (!attackExecuted) {
+	int loopCount = 0;
+
+	while (!attackExecuted && loopCount < 18) {
 		std::vector<Slot>& attackerSide = _isPlayerTurn ? playerSlots : enemySlots;
 		std::vector<Slot>& targetSide = _isPlayerTurn ? enemySlots : playerSlots;
 
-		if (_currentAttackerIndex < attackerSide.size()) {
-			Slot& atk = attackerSide[_currentAttackerIndex];
-			if (!atk.isEmpty && atk.data.currentHp > 0 && atk.card) {
-				Slot* target = findTarget(targetSide, atk);
-				if (target) {
-					doAttack(atk, *target, _isPlayerTurn);
-					attackExecuted = true;
-					_turnTimer = 1.0f;
+		const int playerOrder[9] = { 0, 3, 6, 1, 4, 7, 2, 5, 8 };
+		const int enemyOrder[9] = { 2, 5, 8, 1, 4, 7, 0, 3, 6 };
+
+		if (_currentAttackerIndex < 9) {
+
+			int realIndex = _isPlayerTurn ? playerOrder[_currentAttackerIndex] : enemyOrder[_currentAttackerIndex];
+
+			if (realIndex < attackerSide.size()) {
+				Slot& atk = attackerSide[realIndex];
+				if (!atk.isEmpty && atk.data.currentHp > 0 && atk.card) {
+					Slot* target = findTarget(targetSide, atk);
+					if (target) {
+						doAttack(atk, *target, _isPlayerTurn);
+						attackExecuted = true;
+						_turnTimer = 1.0f;
+					}
 				}
 			}
 		}
@@ -1130,8 +1144,10 @@ void BattleScene::update(float dt) {
 			_currentAttackerIndex++;
 		}
 
-		if (_currentAttackerIndex > playerSlots.size() && _currentAttackerIndex > enemySlots.size())
+		if (_currentAttackerIndex >= 9) {
 			_currentAttackerIndex = 0;
+		}
+		loopCount++;
 	}
 }
 

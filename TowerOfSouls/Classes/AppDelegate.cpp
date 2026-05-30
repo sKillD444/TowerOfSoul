@@ -120,7 +120,7 @@ bool AppDelegate::applicationDidFinishLaunching() {
 
     // ==========================================
     auto& db = MySQLCli::getInstance();
-    bool isConnected = db.connect("127.0.0.1", 3306, "root", "", "card_game");
+    bool isConnected = db.connect("127.0.0.1", 3306, "root", "", "towerofsoul");
 
     if (isConnected) {
         CCLOG("KET NOI MYSQL THANH CONG!");
