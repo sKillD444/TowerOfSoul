@@ -51,7 +51,7 @@ bool BattleScene::init()
 	// ==========================================
 
 	//Layer
-	_coins = 5;
+	_coins = 10000;
 	_uiLayer = Node::create();
 	this->addChild(_uiLayer, static_cast<int>(ZOrder::UI), "uiLayer");
 	this->createUI();
@@ -700,7 +700,24 @@ void BattleScene::endGame() {
 	_infoLabel->setString("");
 	_shopLayer->setVisible(true);
 	this->unscheduleUpdate();
-
+	PlayerData p = _pController.loadPlayer();
+	int gold = 0;
+	if (_round >= 30)		
+		gold = 100;
+	else if (_round >= 25)
+		gold = 70;
+	else if (_round >= 20)
+		gold = 50;
+	else if (_round >= 15)
+		gold = 25;
+	else if (_round >= 10)
+		gold = 20;
+	else if (_round >= 5)
+		gold = 10;
+	p.gold += gold;
+	_pController.updateGold(p.id, p.gold);
+	_lController.updateLeaderboard(p.id, _round);
+	
 	_currentAttackerIndex = 0;
 	_coins = 5;
 	_coinLabel->setString(std::to_string(_coins));
@@ -835,7 +852,7 @@ void BattleScene::loadCardShop() {
 		}
 	}
 
-	auto shopData = _controller.getShopRoll();
+	auto shopData = _controller.getShopRoll(_round);
 	for (size_t i = 0; i < shopData.size() && i < ShopSlots.size(); i++) {
 		auto& slotS = ShopSlots[i];
 		arrLabelCoin[i]->setString(std::to_string(shopData[i].cost));

@@ -45,6 +45,9 @@
     <ClCompile Include="..\Classes\View\CardNode.cpp">
       <Filter>src\View</Filter>
     </ClCompile>
+    <ClCompile Include="..\Classes\Model\LeaderboardModel.cpp">
+      <Filter>src\Model</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="main.h">
@@ -82,6 +85,12 @@
     </ClInclude>
     <ClInclude Include="..\Classes\View\CardNode.h">
       <Filter>src\View</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Classes\Model\LeaderboardModel.h">
+      <Filter>src\Model</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Classes\Controller\LeaderboardController.h">
+      <Filter>src\Controller</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

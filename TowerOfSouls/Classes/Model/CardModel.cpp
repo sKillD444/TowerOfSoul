@@ -31,30 +31,130 @@ vector<BattleCardData> CardModel::getPlayerDeck(int userId) {
     return deck;
 }
 
-vector<BattleCardData> CardModel::getShopRoll() {
+vector<BattleCardData> CardModel::getShopRoll(int round) {
     vector<BattleCardData> shop;
-    auto& db = MySQLCli::getInstance();
 
-    string sql = "SELECT id, card_id, name, base_hp, base_atk, cost, role FROM card_definitions WHERE card_type='PLAYER' ORDER BY RAND() LIMIT 5";
+    int star = 1;
 
-    DBResult* res = db.query(sql);
-    if (res) {
-        char** row;
-        while ((row = res->fetchRow()) != nullptr) {
-            BattleCardData c;
-            c.id = stoi(row[0]);
-            c.card_id = row[1];
-            c.name = row[2];
-            c.level = 1; c.star = 1;
-            c.hp =stoi(row[3]);
-            c.atk = stoi(row[4]);
-			c.cost = stoi(row[5]);
-			c.role = row[6];
-            shop.push_back(c);
+	for (int i = 0; i < 5; i++){
+	    int cost = getCostByRound(round);
+        auto& db = MySQLCli::getInstance();
+        string sql = "SELECT id, card_id, name, base_hp, base_atk, cost, role FROM card_definitions WHERE card_type='PLAYER' AND cost=" + to_string(cost) + "   ORDER BY RAND() LIMIT 1";
+
+        DBResult* res = db.query(sql);
+        if (res) {
+            char** row;
+            while ((row = res->fetchRow()) != nullptr) {
+                BattleCardData c;
+                c.id = stoi(row[0]);
+                c.card_id = row[1];
+                c.name = row[2];
+                c.level = 1;
+
+                int roll = rand() % 100;
+
+                if (round > 9) {
+                    if (roll >= 90) {
+                        star = 3;
+                    }
+                    else if (roll >= 60) {
+                        star = 2;
+                    }
+                    else {
+                        star = 1;
+                    }
+                }
+                else if (round > 4) {
+                    if (roll > 70) {
+                        star = 2;
+                    }
+                    else {
+                        star = 1;
+                    }
+                }
+                c.star = star;
+                c.hp = stoi(row[3]);
+                c.atk = stoi(row[4]);
+                c.cost = stoi(row[5]) * star;
+                c.role = row[6];
+                shop.push_back(c);
+            }
+            delete res;
         }
-        delete res;
     }
     return shop;
+}
+
+int CardModel::getCostByRound(int round) {
+    int rollCost = rand() % 100 + 1;
+    if (round > 20) {
+        if (rollCost >= 80) {
+            return 5;
+        }
+        else if (rollCost >= 60) {
+            return 4;
+        }
+        else if (rollCost >= 40) {
+            return 3;
+        }
+        else if (rollCost >= 10) {
+            return 2;
+        }
+        else {
+            return 1;
+        }
+    }
+    else if (round > 15) {
+        if (rollCost >= 90) {
+            return 5;
+        }
+        else if (rollCost >= 70) {
+            return 4;
+        }
+        else if (rollCost >= 50) {
+            return 3;
+        }
+        else if (rollCost >= 30) {
+            return 2;
+        }
+        else {
+            return 1;
+        }
+	}
+	else if (round > 10) {
+        if (rollCost >= 95) {
+            return 5;
+        }
+        else if (rollCost >= 80) {
+            return 4;
+        }
+        else if (rollCost >= 60) {
+            return 3;
+        }
+        else if (rollCost >= 40) {
+            return 2;
+        }
+        else {
+            return 1;
+        }
+	}
+    else {
+        if (rollCost >= 99) {
+            return 5;
+        }
+        else if (rollCost >= 90) {
+            return 4;
+        }
+        else if (rollCost >= 70) {
+            return 3;
+        }
+        else if (rollCost >= 50) {
+            return 2;
+        }
+        else {
+            return 1;
+        }
+    }
 }
 
 BattleCardData CardModel::getRNDCard(int cost) {

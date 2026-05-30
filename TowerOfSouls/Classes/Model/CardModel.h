@@ -5,6 +5,8 @@
 #include <string> 
 #include <vector>
 #include "../GameData.h"
+#include <cstdlib>
+#include <ctime>
 using namespace std;
 
 class CardModel {
@@ -16,7 +18,8 @@ public:
 
     vector<BattleCardData> getPlayerDeck(int userId);
 
-    vector<BattleCardData> getShopRoll();
+    vector<BattleCardData> getShopRoll(int round);
+    int getCostByRound(int round);
     BattleCardData getRNDCard(int cost);
 
 	bool buyCard(int userId, const BattleCardData& cardData);

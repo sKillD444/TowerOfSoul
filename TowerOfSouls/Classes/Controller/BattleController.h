@@ -18,8 +18,8 @@ public:
         return CardModel::getInstance().getPlayerDeck(1);
     }
 
-	vector<BattleCardData> getShopRoll() {
-        return CardModel::getInstance().getShopRoll();
+	vector<BattleCardData> getShopRoll(int round) {
+        return CardModel::getInstance().getShopRoll(round);
     }
 
     bool buyCard(int userID, const BattleCardData& cardData) {

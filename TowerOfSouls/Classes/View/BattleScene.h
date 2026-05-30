@@ -6,6 +6,8 @@
 #include "CardNode.h"
 #include "ui/CocosGUI.h"
 #include "Controller/BattleController.h"
+#include "Controller/PlayerController.h"
+#include "Controller/LeaderboardController.h"
 #include "MenuScene.h"
 using namespace std;
 
@@ -41,6 +43,8 @@ public:
 
 private:
 	BattleController _controller;
+	PlayerController _pController;
+	LeaderboardController _lController;
 
 	//Layers
 	cocos2d::Node* _uiLayer;
@@ -60,7 +64,7 @@ private:
 	std::vector<cocos2d::Sprite*> arrIconCoin;
 
 	int _coins = 0;
-	int _round =0;
+	int _round =20;
 	int _currentAttackerIndex = 0;
 	bool _isBattle = false;
 	bool _isPlayerTurn = true;
