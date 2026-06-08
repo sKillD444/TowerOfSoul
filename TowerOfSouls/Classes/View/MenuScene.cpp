@@ -68,7 +68,8 @@ void MenuScene::createButtons() {
 	auto teamLabel = Label::createWithTTF("Team", "fonts/alagard.ttf", 14);
 	teamLabel->enableBold();
 	auto teamItem = MenuItemLabel::create(teamLabel, [](Ref*) {
-		
+		auto sceneTeam = TeamScene::createScene();
+		Director::getInstance()->replaceScene(TransitionFade::create(0.5f, sceneTeam, Color3B(0, 0, 0)));
 		});
 	teamItem->setColor(Color3B(240, 235, 220));
 	teamItem->setPosition(Vec2(x, y - 60.0f));
@@ -76,7 +77,8 @@ void MenuScene::createButtons() {
 	auto shopLabel = Label::createWithTTF("Shop", "fonts/alagard.ttf", 14);
 	shopLabel->enableBold();
 	auto shopItem = MenuItemLabel::create(shopLabel, [](Ref*) {
-		
+		auto sceneShop = ShopScene::createScene();
+		Director::getInstance()->replaceScene(TransitionFade::create(0.5f, sceneShop, Color3B(0, 0, 0)));
 		});
 	shopItem->setColor(Color3B(240, 235, 220));
 	shopItem->setPosition(Vec2(x, y - 90.0f));
@@ -84,7 +86,8 @@ void MenuScene::createButtons() {
 	auto rankLabel = Label::createWithTTF("Leaderboard", "fonts/alagard.ttf", 14);
 	rankLabel->enableBold();
 	auto rankItem = MenuItemLabel::create(rankLabel, [](Ref*) {
-
+		auto sceneEndless = LeaderboardScene::createScene();
+		Director::getInstance()->replaceScene(TransitionFade::create(0.5f, sceneEndless, Color3B(0, 0, 0)));
 		});
 	rankItem->setColor(Color3B(240, 235, 220));
 	rankItem->setPosition(Vec2(x, y - 120.0f));

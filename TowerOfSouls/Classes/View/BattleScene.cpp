@@ -21,7 +21,7 @@ namespace L {
 	constexpr float BtnStart_X = 240.0f;
 	constexpr float BtnStart_Y = 260.0f;
 	constexpr float BtnShop_X = 430.0f;
-	constexpr float BtnShop_Y = 100.0f;
+	constexpr float BtnShop_Y = 105.0f;
 
 
 	constexpr float SceneCenter_X = 240.0f;
@@ -124,10 +124,12 @@ void BattleScene::createUI() {
 
 	auto btnShop = Sprite::create("UI/btnShop.png");
 	btnShop->setPosition(Vec2(L::BtnShop_X, L::BtnShop_Y));
+	btnShop->setScale(0.15f);
 	_uiLayer->addChild(btnShop, static_cast<int>(ZOrder::Shop), "btnShop");
 
-	auto btnSetting = Sprite::create("UI/Setting.png");
-	btnSetting->setPosition(Vec2(L::BtnStart_X + 30.0f, L::BtnStart_Y));
+	auto btnSetting = Sprite::create("UI/btnSetting.png");
+	btnSetting->setPosition(Vec2(L::BtnStart_X + 40.0f, L::BtnStart_Y));
+	btnSetting->setScale(0.15f);
 	_uiLayer->addChild(btnSetting, static_cast<int>(ZOrder::UI), "btnSetting");
 }
 
@@ -231,9 +233,9 @@ void BattleScene::createShop() {
 		IconCoinRoll->setPosition(Vec2(L::DestinationShop.x - 12, L::OriginShop.y + 25));
 		IconCoinRoll->setScale(2.5f);
 		_shopLayer->addChild(IconCoinRoll, static_cast<int>(ZOrder::Shop), "iconCoin");
-		auto btnRoll = Sprite::create("UI/Roll.png");
+		auto btnRoll = Sprite::create("UI/btnRoll.png");
 		btnRoll->setPosition(Vec2(L::DestinationShop.x - 10, L::OriginShop.y + 10));
-		btnRoll->setScale(0.8f);
+		btnRoll->setScale(0.2f);
 		_shopLayer->addChild(btnRoll, static_cast<int>(ZOrder::Shop), "btnRoll");
 
 		Slot slot;

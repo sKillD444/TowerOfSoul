@@ -1,5 +1,5 @@
 ﻿#ifndef __LEADERBOARD_CONTROLLER_H__
-#define __LEADERBOAR_CONTROLLER_H__
+#define __LEADERBOARD_CONTROLLER_H__
 
 #include <iostream>
 using namespace std;
@@ -19,6 +19,9 @@ public:
 		}
 	}
 
+	std::vector<LeaderboardData> getTop10Players() {
+		return LeaderboardModel::getInstance().getTop10Players();
+	}
 };
 
 #endif

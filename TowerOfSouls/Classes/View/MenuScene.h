@@ -5,6 +5,9 @@
 #include <iostream>
 #include "ui/CocosGUI.h"
 #include "View/BattleScene.h"
+#include "View/LeaderboardScene.h"
+#include "View/ShopScene.h"
+#include "View/TeamScene.h"
 #include "Controller/PlayerController.h"
 
 using namespace std;

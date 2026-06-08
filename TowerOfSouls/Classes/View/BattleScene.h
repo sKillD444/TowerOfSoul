@@ -64,7 +64,7 @@ private:
 	std::vector<cocos2d::Sprite*> arrIconCoin;
 
 	int _coins = 0;
-	int _round =20;
+	int _round =10;
 	int _currentAttackerIndex = 0;
 	bool _isBattle = false;
 	bool _isPlayerTurn = true;

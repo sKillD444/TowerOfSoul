@@ -26,4 +26,10 @@ struct PlayerData {
     int current_stage;
 };
 
+struct LeaderboardData {
+    int rank;
+    string username;
+    int highest_floor;
+};
+
 #endif

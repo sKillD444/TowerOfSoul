@@ -156,8 +156,11 @@ xcopy "$(ProjectDir)..\Resources" "$(OutDir)\Resources\" /D /E /I /F /Y
     <ClCompile Include="..\Classes\Model\PlayerModel.cpp" />
     <ClCompile Include="..\Classes\View\BattleScene.cpp" />
     <ClCompile Include="..\Classes\View\CardNode.cpp" />
+    <ClCompile Include="..\Classes\View\LeaderboardScene.cpp" />
     <ClCompile Include="..\Classes\View\MenuScene.cpp" />
     <ClCompile Include="..\Classes\View\PlayerHUD.cpp" />
+    <ClCompile Include="..\Classes\View\ShopScene.cpp" />
+    <ClCompile Include="..\Classes\View\TeamScene.cpp" />
     <ClCompile Include="main.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -172,8 +175,11 @@ xcopy "$(ProjectDir)..\Resources" "$(OutDir)\Resources\" /D /E /I /F /Y
     <ClInclude Include="..\Classes\mysql_api.h" />
     <ClInclude Include="..\Classes\View\BattleScene.h" />
     <ClInclude Include="..\Classes\View\CardNode.h" />
+    <ClInclude Include="..\Classes\View\LeaderboardScene.h" />
     <ClInclude Include="..\Classes\View\MenuScene.h" />
     <ClInclude Include="..\Classes\View\PlayerHUD.h" />
+    <ClInclude Include="..\Classes\View\ShopScene.h" />
+    <ClInclude Include="..\Classes\View\TeamScene.h" />
     <ClInclude Include="main.h" />
   </ItemGroup>
   <ItemGroup>

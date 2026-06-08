@@ -48,6 +48,15 @@
     <ClCompile Include="..\Classes\Model\LeaderboardModel.cpp">
       <Filter>src\Model</Filter>
     </ClCompile>
+    <ClCompile Include="..\Classes\View\LeaderboardScene.cpp">
+      <Filter>src\View</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Classes\View\ShopScene.cpp">
+      <Filter>src\View</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Classes\View\TeamScene.cpp">
+      <Filter>src\View</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="main.h">
@@ -91,6 +100,15 @@
     </ClInclude>
     <ClInclude Include="..\Classes\Controller\LeaderboardController.h">
       <Filter>src\Controller</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Classes\View\LeaderboardScene.h">
+      <Filter>src\View</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Classes\View\ShopScene.h">
+      <Filter>src\View</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Classes\View\TeamScene.h">
+      <Filter>src\View</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

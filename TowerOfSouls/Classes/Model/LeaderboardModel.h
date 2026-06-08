@@ -18,6 +18,8 @@ public:
 	void updateLeaderboard(int userId, int score);
 	void addLeaderboardEntry(int userId, int score);  
     bool findPlayerLeaderboard(int userId);
+
+    std::vector<LeaderboardData> getTop10Players();
 };
 
 #endif
