@@ -51,12 +51,15 @@ private:
 	cocos2d::Node* _shopLayer = nullptr;
 	cocos2d::Node* _settingLayer = nullptr;
 	cocos2d::Node* _logBattleLayer = nullptr;
+	cocos2d::Node* _buyDialog = nullptr;
+	
 	
 	//Label
 	cocos2d::Label* _infoLabel = nullptr;
 	cocos2d::Label* _logLabel = nullptr;
 	cocos2d::Label* _coinLabel = nullptr;
 	cocos2d::Label* _resultLabel = nullptr;
+	cocos2d::Label* _quantityLabel = nullptr;
 	std::vector<cocos2d::Label*> arrLabelCoin;
 
 	CardNode* selectedCard = nullptr;
@@ -64,12 +67,17 @@ private:
 	std::vector<cocos2d::Sprite*> arrIconCoin;
 
 	int _coins = 0;
-	int _round =10;
+	int _round =5;
 	int _currentAttackerIndex = 0;
+	int _turnBuffElement = 0;
 	bool _isBattle = false;
 	bool _isPlayerTurn = true;
 	string _logBattle = "";
+	string _buffElement = "";
 	float _turnTimer = 0.5f;
+	
+	int _buyQuantity = 1;
+	BattleCardData _tempCardData;
 
 	//Create UI
 	void createUI();
@@ -78,6 +86,8 @@ private:
 	void createShop();
 	void createSetting();
 	void createLogBattle();
+	void createBuyDialog();
+	void highlightElementBtn(cocos2d::Sprite* selectedBtn);
 
 	//Game Logic
 	void startNewRound();
@@ -100,6 +110,7 @@ private:
 	float synergyAtkMult(std::string role);
 	float culateAllDamage(Slot& attacker, Slot& target, bool isPlayerAttacking);
 	void doAttack(Slot& attacker, Slot& target, bool isPlayerAttacking);
+	void buffElement(string type);
 	
 	//Event Touch
 	void setUpTouchListener();

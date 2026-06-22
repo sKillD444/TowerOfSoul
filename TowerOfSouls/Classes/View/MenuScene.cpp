@@ -123,6 +123,5 @@ void MenuScene::createUI() {
 	sideMenuBg->setContentSize(Size(menuBGWidth, menuBGHeight));
 	sideMenuBg->setPosition(Vec2::ZERO);
 	this->addChild(sideMenuBg, static_cast<int>(ZOrder::BGButton));
-
 }
 

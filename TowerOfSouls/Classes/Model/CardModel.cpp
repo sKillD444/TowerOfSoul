@@ -10,7 +10,7 @@ vector<BattleCardData> CardModel::getPlayerDeck(int userId) {
         "(c.base_atk + o.evolve_atk_bonus) as atk "
         "FROM owned_cards o "
         "JOIN card_definitions c ON o.card_id = c.card_id "
-        "WHERE o.user_id = " + to_string(userId) + " LIMIT 5";
+        "WHERE o.user_id = " + to_string(userId);
 
     DBResult* res = db.query(sql);
     if (res) {
@@ -33,9 +33,6 @@ vector<BattleCardData> CardModel::getPlayerDeck(int userId) {
 
 vector<BattleCardData> CardModel::getShopRoll(int round) {
     vector<BattleCardData> shop;
-
-    int star = 1;
-
 	for (int i = 0; i < 5; i++){
 	    int cost = getCostByRound(round);
         auto& db = MySQLCli::getInstance();
@@ -50,32 +47,10 @@ vector<BattleCardData> CardModel::getShopRoll(int round) {
                 c.card_id = row[1];
                 c.name = row[2];
                 c.level = 1;
-
-                int roll = rand() % 100;
-
-                if (round > 9) {
-                    if (roll >= 90) {
-                        star = 3;
-                    }
-                    else if (roll >= 60) {
-                        star = 2;
-                    }
-                    else {
-                        star = 1;
-                    }
-                }
-                else if (round > 4) {
-                    if (roll > 70) {
-                        star = 2;
-                    }
-                    else {
-                        star = 1;
-                    }
-                }
-                c.star = star;
+                c.star = 1;
                 c.hp = stoi(row[3]);
                 c.atk = stoi(row[4]);
-                c.cost = stoi(row[5]) * star;
+                c.cost = stoi(row[5]);
                 c.role = row[6];
                 shop.push_back(c);
             }

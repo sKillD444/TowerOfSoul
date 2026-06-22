@@ -19,11 +19,35 @@ public:
 		BG, Slot, Button, Card, Info
 	};
 
+	struct Slot {
+		cocos2d::Rect area;
+		CardNode* card;
+		bool isEmpty;
+		cocos2d::Vec2 pos;
+		BattleCardData data;
+	};
+
+	vector<Slot> teamSlots;
+	vector<Slot> deckSlots;
 	virtual bool init() override;
 private:
 	PlayerController _pController;
+	BattleController _cController;
+
+	cocos2d::Node* _inventoryLayer;
+	std::vector<BattleCardData> _tempSelectedCards;
+
+	void createOpenInventoryButton();
+	void showInventoryPopup();
+	void showCardDetailPopup(BattleCardData data, Node* cardNode);
+	void confirmSelection();
+
+	void createDeck();
+	void createTeam();
 
 	void backHome();
+
+	void loadCardOwned();
 	CREATE_FUNC(TeamScene);
 };
 

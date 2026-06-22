@@ -155,6 +155,6 @@ void CardNode::resetStateAndZOrder(cocos2d::Vec2 basePos) {
 
 void CardNode::upStar(int newStar) {
     int currentStar = stoi(_starLabel->getString());
-    if (currentStar < newStar && newStar < 4)
+    if (currentStar < newStar)
         _starLabel->setString(to_string(newStar));
 }

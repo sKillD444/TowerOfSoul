@@ -48,13 +48,13 @@ void ShopScene::backHome()
 	auto visibleSize = Director::getInstance()->getVisibleSize();
 	Vec2 origin = Director::getInstance()->getVisibleOrigin();
 
-	auto btnHome = Button::create("UI/btnHome.png");
+	auto btnHome = Button::create("UI/btnBack.png");
 	btnHome->setScale(0.2f);
-	btnHome->setPosition(Vec2(origin.x + 15.0f, visibleSize.height + 10));
-	btnHome->addClickEventListener([](Ref *)
-								   {
-		auto scene = MenuScene::createScene();
-		Director::getInstance()->replaceScene(TransitionFade::create(0.5, scene, Color3B(0, 0, 0))); });
+	btnHome->setPosition(Vec2(origin.x + 40.0f, visibleSize.height - 10.0f));
+	btnHome->addClickEventListener([](Ref*)
+		{
+			auto scene = MenuScene::createScene();
+			Director::getInstance()->replaceScene(TransitionFade::create(0.5, scene, Color3B(0, 0, 0))); });
 	this->addChild(btnHome, static_cast<int>(ZOrder::Button));
 }
 
@@ -121,7 +121,7 @@ void ShopScene::createGacha()
 	btnRoll1Gold->setTitleText("1");
 	btnRoll1Gold->setPosition(Vec2(btn_x, btn_y));
 	btnRoll1Gold->addClickEventListener([this](Ref *)
-										{
+	{
 		this->RndCard(false,true);
 		_cardLayer->setVisible(!_cardLayer->isVisible()); });
 	this->addChild(btnRoll1Gold, static_cast<int>(ZOrder::Button));
@@ -160,13 +160,13 @@ int ShopScene::rndCost(bool isGem)
 	int cost = 1;
 	if (isGem)
 	{
-		if (rnd > 80)
+		if (rnd > 85)
 			cost = 5;
 		else if (rnd > 60)
 			cost = 4;
-		else if (rnd > 40)
+		else if (rnd > 30)
 			cost = 3;
-		else if (rnd > 20)
+		else if (rnd > 10)
 			cost = 2;
 		else
 			cost = 1;

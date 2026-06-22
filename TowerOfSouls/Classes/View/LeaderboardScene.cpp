@@ -41,17 +41,17 @@ bool LeaderboardScene::init()
 
 void LeaderboardScene::backHome()
 {
-	auto visibleSize = Director::getInstance()->getVisibleSize();
-	Vec2 origin = Director::getInstance()->getVisibleOrigin();
+    auto visibleSize = Director::getInstance()->getVisibleSize();
+    Vec2 origin = Director::getInstance()->getVisibleOrigin();
 
-	auto btnHome = Button::create("UI/btnHome.png");
-	btnHome->setScale(0.2f);
-	btnHome->setPosition(Vec2(origin.x + 15.0f, visibleSize.height + 10));
-	btnHome->addClickEventListener([](Ref *)
-								   {
-		auto scene = MenuScene::createScene();
-		Director::getInstance()->replaceScene(TransitionFade::create(0.5, scene, Color3B(0, 0, 0))); });
-	this->addChild(btnHome, static_cast<int>(ZOrder::Button));
+    auto btnHome = Button::create("UI/btnBack.png");
+    btnHome->setScale(0.2f);
+    btnHome->setPosition(Vec2(origin.x + 40.0f, visibleSize.height - 10.0f));
+    btnHome->addClickEventListener([](Ref*)
+        {
+            auto scene = MenuScene::createScene();
+            Director::getInstance()->replaceScene(TransitionFade::create(0.5, scene, Color3B(0, 0, 0))); });
+    this->addChild(btnHome, static_cast<int>(ZOrder::Button));
 }
 
 void LeaderboardScene::createLeaderboardUI()

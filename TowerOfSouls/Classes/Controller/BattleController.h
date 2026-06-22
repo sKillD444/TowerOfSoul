@@ -63,15 +63,28 @@ public:
 	}
 
 	void updateStar(BattleCardData& card) {
-		if (card.star == 2) {
+		switch (card.star)
+		{
+		case 2:
 			card.atk += 10;
 			card.hp += 30;
 			card.currentHp = card.hp;
-		}
-		else if (card.star == 3) {
-			card.atk += 30;
-			card.hp += 80;
+			break;
+		case 3:
+			card.atk += 20;
+			card.hp += 40;
 			card.currentHp = card.hp;
+			break;
+		case 4:
+			card.atk += 35;
+			card.hp += 55;
+			card.currentHp = card.hp;
+			break;
+		case 5:
+			card.atk += 50;
+			card.hp += 70;
+			card.currentHp = card.hp;
+			break;
 		}
 	}
 };

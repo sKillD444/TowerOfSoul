@@ -30,9 +30,9 @@ bool PlayerHUD::init()
 	goldLabel->enableOutline(Color4B::BLACK, 2);
 	this->addChild(goldLabel);
 
-	auto goldIcon = Sprite::create("UI/Coin.png");
+	auto goldIcon = Sprite::create("Items/Gold.png");
 	goldIcon->setPosition(Vec2(x - 19.0f, y-1));
-	goldIcon->setScale(2.5);
+	goldIcon->setScale(0.03f);
 	this->addChild(goldIcon);
 
 	//GEM 
@@ -42,9 +42,9 @@ bool PlayerHUD::init()
 	gemLabel->enableOutline(Color4B::BLACK, 2);
 	this->addChild(gemLabel);
 
-	auto gemIcon = Sprite::create("UI/Coin.png");
+	auto gemIcon = Sprite::create("Items/Gem.png");
 	gemIcon->setPosition(Vec2(x + 21.0f, y-1));
-	gemIcon->setScale(2.5);
+	gemIcon->setScale(0.03f);
 	this->addChild(gemIcon);
 
 	// ==========================================

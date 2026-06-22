@@ -21,14 +21,19 @@ namespace L {
 	constexpr float BtnStart_X = 240.0f;
 	constexpr float BtnStart_Y = 260.0f;
 	constexpr float BtnShop_X = 430.0f;
-	constexpr float BtnShop_Y = 105.0f;
+	constexpr float BtnShop_Y = 100.0f;
 
+	constexpr float BtnElement_X = 320.0f;
+	constexpr float BtnElement_Y = 260.0f;
 
 	constexpr float SceneCenter_X = 240.0f;
-	constexpr float SceneCenter_Y = 160.0;
+	constexpr float SceneCenter_Y = 160.0f;
 
 	const Vec2 OriginDeck(30.0f, 0.0f);
 	const Vec2 DestinationDeck(445.0f, 90.0f);
+
+	constexpr float Deck_X = 10.0f;
+	constexpr float Deck_Y = 10.0f;
 
 	constexpr float CoinLabel_X = 40.0f;
 	constexpr float CoinLabel_Y = 85.0f;
@@ -86,7 +91,7 @@ bool BattleScene::init()
 
 	//Deck
 	this->createDeck();
-
+	this->createBuyDialog();
 	//Player slot
 	this->createGrid3x3(L::PlayerPos, true);
 	//Enemy slot
@@ -107,18 +112,19 @@ void BattleScene::createUI() {
 	_infoLabel->setColor(Color3B::WHITE);
 	this->addChild(_infoLabel, static_cast<int>(ZOrder::Notification), "infoLabel");
 
-	auto IconCoin = Sprite::create("UI/Coin.png");
-	IconCoin->setPosition(Vec2(L::CoinLabel_X, L::CoinLabel_Y));
-	IconCoin->setScale(3.0f);
+	auto IconCoin = Sprite::create("Items/Silver.png");
+	IconCoin->setPosition(Vec2(L::CoinLabel_X, L::CoinLabel_Y+3));
+	IconCoin->setScale(0.05f);
 	_uiLayer->addChild(IconCoin, static_cast<int>(ZOrder::UI), "iconCoin");
 
 	_coinLabel = Label::createWithTTF(std::to_string(_coins), "fonts/Marker Felt.ttf", 7);
-	_coinLabel->setPosition(Vec2(L::CoinLabel_X + 10, L::CoinLabel_Y));
+	_coinLabel->setPosition(Vec2(L::CoinLabel_X + 15, L::CoinLabel_Y));
 	_coinLabel->setColor(Color3B::YELLOW);
 	_uiLayer->addChild(_coinLabel, static_cast<int>(ZOrder::UI), "coinLabel");
 
 	//BUTTON
-	auto btnStart = Sprite::create("UI/btnStart.png");
+	auto btnStart = Sprite::create("UI/btnPlay.png");
+	btnStart->setScale(0.15f);
 	btnStart->setPosition(Vec2(L::BtnStart_X, L::BtnStart_Y));
 	_uiLayer->addChild(btnStart, static_cast<int>(ZOrder::UI), "btnStart");
 
@@ -128,9 +134,62 @@ void BattleScene::createUI() {
 	_uiLayer->addChild(btnShop, static_cast<int>(ZOrder::Shop), "btnShop");
 
 	auto btnSetting = Sprite::create("UI/btnSetting.png");
-	btnSetting->setPosition(Vec2(L::BtnStart_X + 40.0f, L::BtnStart_Y));
+	btnSetting->setPosition(Vec2(L::BtnStart_X + 30.0f, L::BtnStart_Y));
 	btnSetting->setScale(0.15f);
 	_uiLayer->addChild(btnSetting, static_cast<int>(ZOrder::UI), "btnSetting");
+
+	//Element Buff
+	auto btnAir = Sprite::create("UI/Air.png");
+	btnAir->setPosition(Vec2(L::BtnElement_X, L::BtnElement_Y));
+	btnAir->setScale(0.06f);
+	_uiLayer->addChild(btnAir, static_cast<int>(ZOrder::UI), "btnAir");
+	auto IconCoinAir = Sprite::create("Items/Silver.png");
+	IconCoinAir->setPosition(Vec2(L::BtnElement_X+10, L::BtnElement_Y-17));;
+	IconCoinAir->setScale(0.05f);
+	_uiLayer->addChild(IconCoinAir, static_cast<int>(ZOrder::UI), "IconCoinAir");
+	auto CoinAir = Label::createWithTTF("7", "fonts/Marker Felt.ttf", 7);
+	CoinAir->setPosition(Vec2(L::BtnElement_X , L::BtnElement_Y - 20));
+	CoinAir->setColor(Color3B::YELLOW);
+	_uiLayer->addChild(CoinAir, static_cast<int>(ZOrder::UI), "CoinAir");
+
+	auto btnEarth = Sprite::create("UI/Earth.png");
+	btnEarth->setPosition(Vec2(L::BtnElement_X + 40.0f, L::BtnElement_Y));
+	btnEarth->setScale(0.06f);
+	_uiLayer->addChild(btnEarth, static_cast<int>(ZOrder::UI), "btnEarth");
+	auto IconCoinEarth = Sprite::create("Items/Silver.png");
+	IconCoinEarth->setPosition(Vec2(L::BtnElement_X + 50.0f, L::BtnElement_Y-17));
+	IconCoinEarth->setScale(0.05f);
+	_uiLayer->addChild(IconCoinEarth, static_cast<int>(ZOrder::UI), "IconCoinEarth");
+	auto CoinEarth = Label::createWithTTF("7", "fonts/Marker Felt.ttf", 7);
+	CoinEarth->setPosition(Vec2(L::BtnElement_X + 40.0f, L::BtnElement_Y - 20));
+	CoinEarth->setColor(Color3B::YELLOW);
+	_uiLayer->addChild(CoinEarth, static_cast<int>(ZOrder::UI), "CoinEarth");
+
+	auto btnWater = Sprite::create("UI/Water.png");
+	btnWater->setPosition(Vec2(L::BtnElement_X + 80.0f, L::BtnElement_Y));
+	btnWater->setScale(0.06f);
+	_uiLayer->addChild(btnWater, static_cast<int>(ZOrder::UI), "btnWater");
+	auto IconCoinWater = Sprite::create("Items/Silver.png");
+	IconCoinWater->setPosition(Vec2(L::BtnElement_X + 90.0f, L::BtnElement_Y-17));
+	IconCoinWater->setScale(0.05f);
+	_uiLayer->addChild(IconCoinWater, static_cast<int>(ZOrder::UI), "IconCoinWater");
+	auto CoinWater = Label::createWithTTF("7", "fonts/Marker Felt.ttf", 7);
+	CoinWater->setPosition(Vec2(L::BtnElement_X + 80.0f, L::BtnElement_Y - 20));
+	CoinWater->setColor(Color3B::YELLOW);
+	_uiLayer->addChild(CoinWater, static_cast<int>(ZOrder::UI), "CoinWater");
+
+	auto btnFire = Sprite::create("UI/Fire.png");
+	btnFire->setPosition(Vec2(L::BtnElement_X + 120.0f, L::BtnElement_Y));
+	btnFire->setScale(0.06f);
+	_uiLayer->addChild(btnFire, static_cast<int>(ZOrder::UI), "btnFire");
+	auto IconCoinFire = Sprite::create("Items/Silver.png");
+	IconCoinFire->setPosition(Vec2(L::BtnElement_X + 130.0f, L::BtnElement_Y-17));
+	IconCoinFire->setScale(0.05f);
+	_uiLayer->addChild(IconCoinFire, static_cast<int>(ZOrder::UI), "IconCoinFire");
+	auto CoinFire = Label::createWithTTF("7", "fonts/Marker Felt.ttf", 7);
+	CoinFire->setPosition(Vec2(L::BtnElement_X + 120.0f, L::BtnElement_Y - 20));
+	CoinFire->setColor(Color3B::YELLOW);
+	_uiLayer->addChild(CoinFire, static_cast<int>(ZOrder::UI), "CoinAir");
 }
 
 void BattleScene::createGrid3x3(Vec2 startPos, bool isPlayer) {
@@ -164,8 +223,15 @@ void BattleScene::createGrid3x3(Vec2 startPos, bool isPlayer) {
 }
 
 void BattleScene::createDeck() {
-	auto drawBg = DrawNode::create();
-	drawBg->drawSolidRect(L::OriginDeck, L::DestinationDeck, Color4F(0.1f, 0.1f, 0.1f, 1.0f));
+	auto drawBg = Sprite::create("BG/BGDeck.png");
+	drawBg->setAnchorPoint(Vec2(0, 0));
+	drawBg->setPosition(Vec2(L::Deck_X, L::Deck_Y));
+
+	float bgWidth = L::DestinationDeck.x - L::OriginDeck.x+40;
+	float bgHeight = L::DestinationDeck.y - L::OriginDeck.y;
+	drawBg->setScaleX(bgWidth / drawBg->getContentSize().width);
+	drawBg->setScaleY(bgHeight / drawBg->getContentSize().height);
+
 	this->addChild(drawBg, static_cast<int>(ZOrder::Deck));
 
 	for (int i = 0; i < 12; i++) {
@@ -218,9 +284,9 @@ void BattleScene::createShop() {
 		arrLabelCoin.push_back(CostLabel);
 		_shopLayer->addChild(CostLabel, 10, "costLabel" + std::to_string(i));
 
-		auto IconCoin = Sprite::create("UI/Coin.png");
-		IconCoin->setPosition(Vec2(center.x - 10, center.y - 35));
-		IconCoin->setScale(2.5f);
+		auto IconCoin = Sprite::create("Items/Silver.png");
+		IconCoin->setPosition(Vec2(center.x - 10, center.y - 32));
+		IconCoin->setScale(0.05f);
 		arrIconCoin.push_back(IconCoin);
 		_shopLayer->addChild(IconCoin, 10, "iconCoin" + std::to_string(i));
 
@@ -229,9 +295,9 @@ void BattleScene::createShop() {
 		RollCoinLable->setPosition(Vec2(L::DestinationShop.x - 5, L::OriginShop.y + 25));
 		RollCoinLable->setColor(Color3B::YELLOW);
 		_shopLayer->addChild(RollCoinLable, static_cast<int>(ZOrder::Shop), "costLabel" + std::to_string(i));
-		auto IconCoinRoll = Sprite::create("UI/Coin.png");
-		IconCoinRoll->setPosition(Vec2(L::DestinationShop.x - 12, L::OriginShop.y + 25));
-		IconCoinRoll->setScale(2.5f);
+		auto IconCoinRoll = Sprite::create("Items/Silver.png");
+		IconCoinRoll->setPosition(Vec2(L::DestinationShop.x - 12, L::OriginShop.y +28));
+		IconCoinRoll->setScale(0.05f);
 		_shopLayer->addChild(IconCoinRoll, static_cast<int>(ZOrder::Shop), "iconCoin");
 		auto btnRoll = Sprite::create("UI/btnRoll.png");
 		btnRoll->setPosition(Vec2(L::DestinationShop.x - 10, L::OriginShop.y + 10));
@@ -245,7 +311,6 @@ void BattleScene::createShop() {
 		slot.pos = center;
 		ShopSlots.push_back(slot);
 	}
-
 }
 
 void BattleScene::createSetting() {
@@ -355,7 +420,7 @@ bool BattleScene::onTouchBegan(cocos2d::Touch* touch, cocos2d::Event* event) {
 
 	auto btnStart = dynamic_cast<Sprite*>(_uiLayer->getChildByName("btnStart"));
 
-	if (btnStart && btnStart->getBoundingBox().containsPoint(pos) && _btnPlayEnabled&&!_shopLayer->isVisible()&& !_settingLayer->isVisible()) {
+	if (btnStart && btnStart->getBoundingBox().containsPoint(pos) && _btnPlayEnabled && !_shopLayer->isVisible() && !_settingLayer->isVisible()) {
 		btnStart->setOpacity(200);
 		if (countUnitsOnBoard() == 0) {
 			_infoLabel->setString("Dat 1 card len san");
@@ -373,7 +438,7 @@ bool BattleScene::onTouchBegan(cocos2d::Touch* touch, cocos2d::Event* event) {
 	}
 
 	auto btnShop = dynamic_cast<Sprite*>(_uiLayer->getChildByName("btnShop"));
-	if (btnShop && btnShop->getBoundingBox().containsPoint(pos) && _btnShopEnabled&& !_settingLayer->isVisible()) {
+	if (btnShop && btnShop->getBoundingBox().containsPoint(pos) && _btnShopEnabled && !_settingLayer->isVisible()) {
 		bool isOpening = !_shopLayer->isVisible();
 		_shopLayer->setVisible(isOpening);
 		btnShop->setOpacity(200);
@@ -388,10 +453,46 @@ bool BattleScene::onTouchBegan(cocos2d::Touch* touch, cocos2d::Event* event) {
 	}
 
 	auto btnSetting = dynamic_cast<Sprite*>(_uiLayer->getChildByName("btnSetting"));
-	if (btnSetting && btnSetting->getBoundingBox().containsPoint(pos) && _btnSettingEnabled&&!_shopLayer->isVisible()) {
+	if (btnSetting && btnSetting->getBoundingBox().containsPoint(pos) && _btnSettingEnabled && !_shopLayer->isVisible()) {
 		bool isOpening = !_settingLayer->isVisible();
 		_settingLayer->setVisible(isOpening);
 		btnSetting->setOpacity(200);
+		return true;
+	}
+
+	auto btnAir = dynamic_cast<Sprite*>(_uiLayer->getChildByName("btnAir"));
+	if (btnAir && btnAir->getBoundingBox().containsPoint(pos) && _buffElement == "") {
+		highlightElementBtn(btnAir);
+		btnAir->setScale(0.07f);
+		_buffElement = "Air";
+		_turnBuffElement = 1;
+		_coins -= 7;
+		return true;
+	}
+	auto btnEarth = dynamic_cast<Sprite*>(_uiLayer->getChildByName("btnEarth"));
+	if (btnEarth && btnEarth->getBoundingBox().containsPoint(pos) && _buffElement == "") {
+		highlightElementBtn(btnEarth);
+		btnEarth->setScale(0.07f);
+		_buffElement = "Earth";
+		_coins -= 7;
+		return true;
+	}
+	auto btnWater = dynamic_cast<Sprite*>(_uiLayer->getChildByName("btnWater"));
+	if (btnWater && btnWater->getBoundingBox().containsPoint(pos) && _buffElement == "") {
+		highlightElementBtn(btnWater);
+		btnWater->setScale(0.07f);
+		_buffElement = "Water";
+		_turnBuffElement = 5;
+		_coins -= 7;
+		return true;
+	}
+	auto btnFire = dynamic_cast<Sprite*>(_uiLayer->getChildByName("btnFire"));
+	if (btnFire && btnFire->getBoundingBox().containsPoint(pos) && _buffElement == "") {
+		highlightElementBtn(btnFire);
+		btnFire->setScale(0.07f);
+		_buffElement = "Fire";
+		_turnBuffElement = 5;
+		_coins -= 7;
 		return true;
 	}
 
@@ -419,63 +520,30 @@ bool BattleScene::onTouchBegan(cocos2d::Touch* touch, cocos2d::Event* event) {
 		//Buy
 		for (auto& slotShop : ShopSlots) {
 			if (!slotShop.isEmpty && slotShop.card && slotShop.area.containsPoint(pos)) {
-				if (slotShop.data.cost <= _coins) {
-					for (auto& slotD : deckSlots) {
-						if (slotD.isEmpty) {
-							slotD.card = CardNode::createNode(slotShop.data, L::CELL_W, L::CELL_H);
-							if (slotD.card != nullptr) {
-								slotD.data = slotShop.data;
-								slotD.card->setPosition(slotD.pos);
-								this->addChild(slotD.card, static_cast<int>(ZOrder::Character));
-								slotD.isEmpty = false;
+				_tempCardData = slotShop.data;
+				_buyQuantity = 1;
+				_quantityLabel->setString("1");
+				_buyDialog->setVisible(true);
 
-								slotShop.card->removeFromParent();
-								slotShop.card = nullptr;
-								slotShop.isEmpty = true;
-
-								_coins -= slotShop.data.cost;
-								_coinLabel->setString(std::to_string(_coins));
-
-								arrLabelCoin[&slotShop - &ShopSlots[0]]->setString("");
-								arrIconCoin[&slotShop - &ShopSlots[0]]->setVisible(false);
-
-								if (slotD.data.star < 4) {
-									mergeCard(slotD);
-								}
-							}
-							break;
-						}
-					}
-					return true;
-				}
-				else {
-					_infoLabel->setString("Khong du coin");
-					auto delay = DelayTime::create(1.5f);
-					auto squence = Sequence::create(delay, CallFunc::create([this]() {
-						_infoLabel->setString("");
-						}), nullptr);
-					this->runAction(squence);
-					break;
-				}
+				return true;
 			}
 		}
-
 	}
 
-	if(!_shopLayer->isVisible()&&!_settingLayer->isVisible())
-	for (auto& slotD : deckSlots) {
-		if (!slotD.isEmpty && slotD.card && slotD.area.containsPoint(pos)) {
-			selectedCard = slotD.card;
-			selectedData = slotD.data;
-			originalPos = slotD.pos;
-			slotD.card = nullptr;
-			slotD.isEmpty = true;
-			selectedCard->setLocalZOrder(static_cast<int>(ZOrder::Card));
-			selectedCard->setScale(selectedCard->getScale() * 1.2f);
-			highLightLine(true);
-			return true;
+	if (!_shopLayer->isVisible() && !_settingLayer->isVisible())
+		for (auto& slotD : deckSlots) {
+			if (!slotD.isEmpty && slotD.card && slotD.area.containsPoint(pos)) {
+				selectedCard = slotD.card;
+				selectedData = slotD.data;
+				originalPos = slotD.pos;
+				slotD.card = nullptr;
+				slotD.isEmpty = true;
+				selectedCard->setLocalZOrder(static_cast<int>(ZOrder::Card));
+				selectedCard->setScale(selectedCard->getScale() * 1.2f);
+				highLightLine(true);
+				return true;
+			}
 		}
-	}
 
 	for (auto& slot : playerSlots) {
 		if (!slot.isEmpty && slot.card && slot.area.containsPoint(pos)) {
@@ -514,6 +582,24 @@ void BattleScene::onTouchEnd(cocos2d::Touch* touch, cocos2d::Event* event) {
 	if (btnSetting) {
 		btnSetting->setOpacity(255);
 	}
+
+	auto btnAir = dynamic_cast<Sprite*>(_uiLayer->getChildByName("btnAir"));
+	if (btnAir) {
+		btnAir->setScale(0.06f);
+	}
+	auto btnEarth = dynamic_cast<Sprite*>(_uiLayer->getChildByName("btnEarth"));
+	if (btnEarth) {
+		btnEarth->setScale(0.06f);
+	}
+	auto btnWater = dynamic_cast<Sprite*>(_uiLayer->getChildByName("btnWater"));
+	if (btnWater) {
+		btnEarth->setScale(0.06f);
+	}
+	auto btnFire = dynamic_cast<Sprite*>(_uiLayer->getChildByName("btnFire"));
+	if (btnFire) {
+		btnFire->setScale(0.06f);
+	}
+
 
 	if (!selectedCard) return;
 	bool placed = false;
@@ -666,6 +752,11 @@ void BattleScene::startBattle() {
 			e.card->updateStats(e.data.currentHp, dmg);
 		}
 	}
+
+	if (_buffElement == "Earth")
+		buffElement("Earth");
+	string elementBuff = "Element: " + _buffElement + "\n\n";
+	_logBattle += elementBuff;
 	this->scheduleUpdate();
 }
 
@@ -673,9 +764,19 @@ void BattleScene::endBattle() {
 	_btnShopEnabled = true;
 	_btnPlayEnabled = true;
 	_isBattle = false;
+	_turnBuffElement = 0;
+	_buffElement = "";
 
 	_infoLabel->setString("");
 	_shopLayer->setVisible(true);
+
+	std::vector<std::string> btnNames = { "btnAir", "btnEarth", "btnWater", "btnFire" };
+	for (auto name : btnNames) {
+		auto btn = dynamic_cast<Sprite*>(_uiLayer->getChildByName(name));
+		if (btn) {
+			btn->removeChildByName("glowEffect");
+		}
+	}
 
 	_coins += 3;
 	_coinLabel->setString(std::to_string(_coins));
@@ -698,13 +799,23 @@ void BattleScene::endGame() {
 	_btnShopEnabled = true;
 	_btnPlayEnabled = true;
 	_isBattle = false;
+	_turnBuffElement = 0;
+	_buffElement = "";
+
+	std::vector<std::string> btnNames = { "btnAir", "btnEarth", "btnWater", "btnFire" };
+	for (auto name : btnNames) {
+		auto btn = dynamic_cast<Sprite*>(_uiLayer->getChildByName(name));
+		if (btn) {
+			btn->removeChildByName("glowEffect");
+		}
+	}
 
 	_infoLabel->setString("");
 	_shopLayer->setVisible(true);
 	this->unscheduleUpdate();
 	PlayerData p = _pController.loadPlayer();
 	int gold = 0;
-	if (_round >= 30)		
+	if (_round >= 30)
 		gold = 100;
 	else if (_round >= 25)
 		gold = 70;
@@ -719,7 +830,7 @@ void BattleScene::endGame() {
 	p.gold += gold;
 	_pController.updateGold(p.id, p.gold);
 	_lController.updateLeaderboard(p.id, _round);
-	
+
 	_currentAttackerIndex = 0;
 	_coins = 5;
 	_coinLabel->setString(std::to_string(_coins));
@@ -767,57 +878,57 @@ int BattleScene::countCard(BattleCardData data) {
 	return count;
 }
 
-void BattleScene::mergeCard(Slot& card) {
-	string targetId = card.data.card_id;
-	int targetStar = card.data.star;
-	if (countCard(card.data) < 3)return;
-	bool flag = true;
-	int count = 0;
-	Slot* upgradedSlot = nullptr;
-	for (auto& slot : playerSlots) {
-		if (count > 2)break;
-		if (!slot.isEmpty && slot.card != nullptr && slot.data.card_id == targetId && slot.data.star == targetStar) {
-			if (flag) {
-				slot.data.star++;
-				_controller.updateStar(slot.data);
-				slot.card->updateStats(slot.data.currentHp, slot.data.atk);
-				slot.card->upStar(slot.data.star);
-				count++;
-				upgradedSlot = &slot;
-				flag = false;
-			}
-			else {
-				slot.card->removeFromParentAndCleanup(true);
-				slot.card = nullptr;
-				slot.isEmpty = true;
-				count++;
-			}
-		}
-	}
-	for (auto& slot : deckSlots) {
-		if (count > 2)break;
-		if (!slot.isEmpty && slot.card != nullptr && slot.data.card_id == targetId && slot.data.star == targetStar) {
-			if (flag) {
-				slot.data.star++;
-				_controller.updateStar(slot.data);
-				slot.card->updateStats(slot.data.currentHp, slot.data.atk);
-				slot.card->upStar(slot.data.star);
-				count++;
-				upgradedSlot = &slot;
-				flag = false;
-			}
-			else {
-				slot.card->removeFromParentAndCleanup(true);
-				slot.card = nullptr;
-				slot.isEmpty = true;
-				count++;
-			}
-		}
-	}
-	if (upgradedSlot != nullptr && upgradedSlot->data.star < 3) {
-		mergeCard(*upgradedSlot);
-	}
-}
+//void BattleScene::mergeCard(Slot& card) {
+//	string targetId = card.data.card_id;
+//	int targetStar = card.data.star;
+//	if (countCard(card.data) < 3)return;
+//	bool flag = true;
+//	int count = 0;
+//	Slot* upgradedSlot = nullptr;
+//	for (auto& slot : playerSlots) {
+//		if (count > 2)break;
+//		if (!slot.isEmpty && slot.card != nullptr && slot.data.card_id == targetId && slot.data.star == targetStar) {
+//			if (flag) {
+//				slot.data.star++;
+//				_controller.updateStar(slot.data);
+//				slot.card->updateStats(slot.data.currentHp, slot.data.atk);
+//				slot.card->upStar(slot.data.star);
+//				count++;
+//				upgradedSlot = &slot;
+//				flag = false;
+//			}
+//			else {
+//				slot.card->removeFromParentAndCleanup(true);
+//				slot.card = nullptr;
+//				slot.isEmpty = true;
+//				count++;
+//			}
+//		}
+//	}
+//	for (auto& slot : deckSlots) {
+//		if (count > 2)break;
+//		if (!slot.isEmpty && slot.card != nullptr && slot.data.card_id == targetId && slot.data.star == targetStar) {
+//			if (flag) {
+//				slot.data.star++;
+//				_controller.updateStar(slot.data);
+//				slot.card->updateStats(slot.data.currentHp, slot.data.atk);
+//				slot.card->upStar(slot.data.star);
+//				count++;
+//				upgradedSlot = &slot;
+//				flag = false;
+//			}
+//			else {
+//				slot.card->removeFromParentAndCleanup(true);
+//				slot.card = nullptr;
+//				slot.isEmpty = true;
+//				count++;
+//			}
+//		}
+//	}
+//	if (upgradedSlot != nullptr && upgradedSlot->data.star < 3) {
+//		mergeCard(*upgradedSlot);
+//	}
+//}
 
 bool BattleScene::deleteCard(CardNode* select, BattleCardData data) {
 	Vec2 originDelete = Vec2(L::OriginDeck.x - 30.0f, L::OriginDeck.y);
@@ -998,7 +1109,7 @@ float BattleScene::synergyAtkMult(std::string role) {
 			dem++;
 	}
 	if (dem > 5)
-		return 25 ;
+		return 25;
 	else if (dem > 4)
 		return 15;
 	else if (dem > 3)
@@ -1058,6 +1169,33 @@ void BattleScene::doAttack(Slot& attacker, Slot& target, bool isPlayerAttacking)
 	_logBattle += log;
 }
 
+void BattleScene::buffElement(string type) {
+	if (type == "Fire") {
+		for (auto& e : enemySlots) {
+			if (!e.isEmpty && e.card) {
+				e.data.currentHp -= e.data.hp * 0.05f;
+				e.card->updateStats(e.data.currentHp, e.data.atk);
+			}
+		}
+	}
+	else if (type == "Water") {
+		for (auto& p : playerSlots) {
+			if (!p.isEmpty && p.card) {
+				p.data.currentHp += p.data.hp * 0.05f;
+				p.card->updateStats(p.data.currentHp, p.data.atk);
+			}
+		}
+	}
+	else if (type == "Earth") {
+		for (auto& p : playerSlots) {
+			if (!p.isEmpty && p.card) {
+				p.data.currentHp += p.data.hp * 0.20f;
+				p.card->updateStats(p.data.currentHp, p.data.atk);
+			}
+		}
+	}
+}
+
 void BattleScene::update(float dt) {
 	if (!_isBattle) return;
 
@@ -1112,7 +1250,6 @@ void BattleScene::update(float dt) {
 		this->unscheduleUpdate();
 		_logLabel->setString(_logBattle);
 		_resultLabel->setString("LOSE");
-		_resultLabel->setString("");
 		_logBattleLayer->setVisible(!_logBattleLayer->isVisible());
 		auto btn = dynamic_cast<cocos2d::ui::Button*>(_logBattleLayer->getChildByName("btnOkLog"));
 		if (btn) {
@@ -1120,6 +1257,7 @@ void BattleScene::update(float dt) {
 				_logBattleLayer->setVisible(!_logBattleLayer->isVisible());
 				_logBattle = "";
 				_infoLabel->setString("");
+				_resultLabel->setString("");
 				_logLabel->setString(_logBattle);
 				this->endGame();
 				});
@@ -1133,6 +1271,15 @@ void BattleScene::update(float dt) {
 	bool attackExecuted = false;
 	int loopCount = 0;
 
+	if (_turnBuffElement > 0)
+	{
+		buffElement(_buffElement);
+		_turnBuffElement--;
+
+	}
+	else if (_buffElement != "Air") {
+		_buffElement = "";
+	}
 	while (!attackExecuted && loopCount < 18) {
 		std::vector<Slot>& attackerSide = _isPlayerTurn ? playerSlots : enemySlots;
 		std::vector<Slot>& targetSide = _isPlayerTurn ? enemySlots : playerSlots;
@@ -1141,17 +1288,23 @@ void BattleScene::update(float dt) {
 		const int enemyOrder[9] = { 2, 5, 8, 1, 4, 7, 0, 3, 6 };
 
 		if (_currentAttackerIndex < 9) {
-
 			int realIndex = _isPlayerTurn ? playerOrder[_currentAttackerIndex] : enemyOrder[_currentAttackerIndex];
 
 			if (realIndex < attackerSide.size()) {
 				Slot& atk = attackerSide[realIndex];
 				if (!atk.isEmpty && atk.data.currentHp > 0 && atk.card) {
-					Slot* target = findTarget(targetSide, atk);
-					if (target) {
-						doAttack(atk, *target, _isPlayerTurn);
+
+					if (!_isPlayerTurn && _buffElement == "Air" && (realIndex == 0 || realIndex == 3 || realIndex == 6)) {
+						_turnTimer = 0.2f;
 						attackExecuted = true;
-						_turnTimer = 1.0f;
+					}
+					else {
+						Slot* target = findTarget(targetSide, atk);
+						if (target) {
+							doAttack(atk, *target, _isPlayerTurn);
+							attackExecuted = true;
+							_turnTimer = 1.0f;
+						}
 					}
 				}
 			}
@@ -1165,11 +1318,93 @@ void BattleScene::update(float dt) {
 
 		if (_currentAttackerIndex >= 9) {
 			_currentAttackerIndex = 0;
+			if (_buffElement == "Air") {
+				_buffElement = "";
+			}
 		}
 		loopCount++;
 	}
 }
 
+void BattleScene::createBuyDialog() {
+	_buyDialog = Node::create();
+	_buyDialog->setVisible(false);
+	this->addChild(_buyDialog, (int)ZOrder::Notification);
 
+	auto bg = DrawNode::create();
+	bg->drawSolidRect(Vec2(160, 90), Vec2(320, 210), Color4F(0, 0, 0, 0.9f));
+	_buyDialog->addChild(bg);
 
+	_quantityLabel = Label::createWithTTF("1", "fonts/Marker Felt.ttf", 18);
+	_quantityLabel->setPosition(Vec2(240, 150));
+	_buyDialog->addChild(_quantityLabel);
 
+	auto menu = Menu::create();
+	menu->setPosition(Vec2::ZERO);
+
+	auto plus = MenuItemLabel::create(Label::createWithTTF("+", "fonts/Marker Felt.ttf", 18), [this](Ref*) {
+		if (_buyQuantity < 5) { _buyQuantity++; _quantityLabel->setString(to_string(_buyQuantity)); }
+		});
+	plus->setPosition(Vec2(280, 150));
+	menu->addChild(plus);
+
+	auto minus = MenuItemLabel::create(Label::createWithTTF("-", "fonts/Marker Felt.ttf", 18), [this](Ref*) {
+		if (_buyQuantity > 1) { _buyQuantity--; _quantityLabel->setString(to_string(_buyQuantity)); }
+		});
+	minus->setPosition(Vec2(200, 150));
+	menu->addChild(minus);
+
+	auto buyBtn = MenuItemLabel::create(Label::createWithTTF("BUY", "fonts/Marker Felt.ttf", 18), [this](Ref*) {
+		int totalCost = _buyQuantity * _tempCardData.cost;
+
+		if (_coins >= totalCost) {
+			bool isPlaced = false;
+
+			for (auto& slotD : deckSlots) {
+				if (slotD.isEmpty) {
+					slotD.card = CardNode::createNode(_tempCardData, L::CELL_W, L::CELL_H);
+					slotD.data = _tempCardData;
+					slotD.data.star = _buyQuantity;
+					slotD.card->setPosition(slotD.pos);
+					this->addChild(slotD.card, static_cast<int>(ZOrder::Character));
+					slotD.isEmpty = false;
+
+					_controller.updateStar(slotD.data);
+					slotD.card->updateStats(slotD.data.currentHp, slotD.data.atk);
+					slotD.card->upStar(slotD.data.star);
+
+					isPlaced = true;
+					break; 
+				}
+			}
+
+			if (isPlaced) {
+				_coins -= totalCost;
+				_coinLabel->setString(to_string(_coins));
+				_buyDialog->setVisible(false);
+			}
+			else {
+				_infoLabel->setString("Day deck roi!");
+				_buyDialog->setVisible(false);
+			}
+		}
+		else {
+			_infoLabel->setString("Khong du coin!");
+			_buyDialog->setVisible(false);
+		}
+		});
+	buyBtn->setPosition(Vec2(240, 110));
+	menu->addChild(buyBtn);
+
+	_buyDialog->addChild(menu);
+}
+
+void BattleScene::highlightElementBtn(cocos2d::Sprite* selectedBtn) {
+	if (selectedBtn) {
+		auto glow = Sprite::createWithTexture(selectedBtn->getTexture());
+		glow->setPosition(Vec2(selectedBtn->getContentSize().width / 2, selectedBtn->getContentSize().height / 2));
+		glow->setBlendFunc(BlendFunc::ADDITIVE);
+		glow->setName("glowEffect");
+		selectedBtn->addChild(glow);
+	}
+}
