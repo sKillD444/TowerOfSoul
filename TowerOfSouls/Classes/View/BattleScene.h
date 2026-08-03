@@ -8,17 +8,22 @@
 #include "Controller/BattleController.h"
 #include "Controller/PlayerController.h"
 #include "Controller/LeaderboardController.h"
-#include "MenuScene.h"
+#include "View/ResponsiveHelper.h"
+#include "View/MenuScene.h"
+#include "View/CampaignScene.h"
+#include "audio/include/AudioEngine.h"
+using namespace cocos2d::experimental;
 using namespace std;
+using namespace cocos2d::ui;
 
 class BattleScene : public cocos2d::Scene
 {
 public:
 
-	static cocos2d::Scene* createScene();
-	enum class ZOrder { BackGround, Slot, Deck, Character, UI, Shop, Card, Notification};
+	static cocos2d::Scene* createScene(bool isCampaign = false, int stageId = 1);
+	virtual bool init(bool isCampaign = false, int stageId = 1);
 
-	virtual bool init() override;
+	enum class ZOrder { BackGround, Slot, Deck, Character, UI, Shop, Card, Notification};
 
 	cocos2d::Vec2 originalPos;
 	bool _btnShopEnabled = true;
@@ -32,16 +37,31 @@ public:
 		bool isEmpty;
 		cocos2d::Vec2 pos;
 		BattleCardData data;
+		bool isPlayerSide = true;
 	};
 
-	vector<Slot> playerSlots;
-	vector<Slot> enemySlots;
+	vector<Slot> boardSlots;
 	vector<Slot> deckSlots;
 	vector<Slot> ShopSlots;
+	vector<Slot> reinforcementSlots;
+
+	struct CombatAction {
+		Slot* attacker;
+		Slot* target;
+		float damage;
+		bool isPlayerAttacking;
+		bool targetDied;
+	};
+
+	struct CombatCluster {
+		vector<Slot*> allies;
+		vector<Slot*> enemies;
+	};
 
 	virtual void update(float dt) override;
 
 private:
+
 	BattleController _controller;
 	PlayerController _pController;
 	LeaderboardController _lController;
@@ -60,11 +80,12 @@ private:
 	cocos2d::Label* _coinLabel = nullptr;
 	cocos2d::Label* _resultLabel = nullptr;
 	cocos2d::Label* _quantityLabel = nullptr;
-	std::vector<cocos2d::Label*> arrLabelCoin;
-
+	
 	CardNode* selectedCard = nullptr;
 	BattleCardData selectedData;
-	std::vector<cocos2d::Sprite*> arrIconCoin;
+	vector<cocos2d::Sprite*> arrIconCoin;
+	vector<CombatAction> _actionQueue;
+	vector<cocos2d::Label*> arrLabelCoin;
 
 	int _coins = 0;
 	int _round =5;
@@ -72,22 +93,28 @@ private:
 	int _turnBuffElement = 0;
 	bool _isBattle = false;
 	bool _isPlayerTurn = true;
+	bool _isCalculatingCombat = false;
 	string _logBattle = "";
 	string _buffElement = "";
+	string _selectedBuffElement = "";
 	float _turnTimer = 0.5f;
+
+	mutex _mtx;
 	
 	int _buyQuantity = 1;
 	BattleCardData _tempCardData;
 
 	//Create UI
 	void createUI();
-	void createGrid3x3(cocos2d::Vec2 startPos, bool isPlayer);
+	void createArena(cocos2d::Vec2 ignoredPos);
 	void createDeck();
 	void createShop();
 	void createSetting();
 	void createLogBattle();
 	void createBuyDialog();
+	void createReinforcementSlots();
 	void highlightElementBtn(cocos2d::Sprite* selectedBtn);
+	void loadMap();
 
 	//Game Logic
 	void startNewRound();
@@ -106,17 +133,33 @@ private:
 	void loadCardShop();
 	void highLightLine(bool flag);
 	void spawnEnemies();
-	Slot* findTarget(std::vector<Slot>& targetSlots, Slot& attacker);
-	float synergyAtkMult(std::string role);
+	void spawnHiddenEnemy();
+	Slot* findTarget(vector<Slot*>& targetSlots, Slot* attacker);
+	float synergyAtkMult(string role);
 	float culateAllDamage(Slot& attacker, Slot& target, bool isPlayerAttacking);
 	void doAttack(Slot& attacker, Slot& target, bool isPlayerAttacking);
 	void buffElement(string type);
+	void resetElementButtons();
+	vector<CombatCluster> groupUnits();
+	void startCombatCalculation();
+	void playCombatAnimations(const vector<CombatAction>& actions);
 	
 	//Event Touch
 	void setUpTouchListener();
 	bool onTouchBegan(cocos2d::Touch* touch, cocos2d::Event* event);
 	void onTouchMove(cocos2d::Touch* touch, cocos2d::Event* event);
 	void onTouchEnd(cocos2d::Touch* touch, cocos2d::Event* event);
+
+	//Campaign
+	bool _isCampaign = false;
+	int _currentStageId = 1;
+	int _currentWave = 1;
+	int _maxWaves = 1;
+
+	void loadTeam();
+	void spawnCampaignEnemies(int stageId, int wave);
+
+	//Test
 
 	CREATE_FUNC(BattleScene);
 };

@@ -6,9 +6,13 @@
 #include "ui/CocosGUI.h"
 #include "Controller/PlayerController.h"
 #include "Controller/BattleController.h"
+#include "View/PlayerHUD.h"
+#include "View/MenuScene.h"
+#include "View/ResponsiveHelper.h"
 #include "CardNode.h"
 
 using namespace std;
+using namespace cocos2d::ui;
 
 class TeamScene : public cocos2d::Scene
 {
@@ -35,19 +39,18 @@ private:
 	BattleController _cController;
 
 	cocos2d::Node* _inventoryLayer;
-	std::vector<BattleCardData> _tempSelectedCards;
+	vector<BattleCardData> _tempSelectedCards;
 
 	void createOpenInventoryButton();
 	void showInventoryPopup();
 	void showCardDetailPopup(BattleCardData data, Node* cardNode);
 	void confirmSelection();
-
+	void loadSavedTeam();
 	void createDeck();
 	void createTeam();
 
 	void backHome();
 
-	void loadCardOwned();
 	CREATE_FUNC(TeamScene);
 };
 

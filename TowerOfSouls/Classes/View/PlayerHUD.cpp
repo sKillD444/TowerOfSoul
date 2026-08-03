@@ -1,59 +1,65 @@
 ﻿#include "PlayerHUD.h"
 
-
 USING_NS_CC;
 using namespace cocos2d::ui;
-bool PlayerHUD::init()
-{
-	if (!Node::init())
-	{
-		return false;
-	}
 
-	// ==========================================
-	auto visibleSize = Director::getInstance()->getVisibleSize();
-	Vec2 origin = Director::getInstance()->getVisibleOrigin();
-	float x = origin.x + visibleSize.width * 0.85f;
-	float y = origin.y + visibleSize.height * 0.95f;
+bool PlayerHUD::init() {
+    if (!Node::init()) return false;
 
-	//NAME
-	nameLabel = Label::createWithTTF("", "fonts/04B_03__.ttf", 10);
-	nameLabel->setPosition(Vec2(origin.x + visibleSize.width * 0.1f, y));
-	nameLabel->setTextColor(Color4B(255, 255, 255, 200));
-	nameLabel->enableOutline(Color4B::BLACK, 2);
-	this->addChild(nameLabel);
+    Vec2 topRight = Responsive::getPos(0.96f, 0.95f);
+    Vec2 topLeft = Responsive::getPos(0.04f, 0.95f);
 
-	//GOLD
-	goldLabel = Label::createWithTTF("", "fonts/04B_03__.ttf", 8);
-	goldLabel->setColor(Color3B::YELLOW);
-	goldLabel->setPosition(Vec2(x, y));
-	goldLabel->enableOutline(Color4B::BLACK, 2);
-	this->addChild(goldLabel);
+    nameLabel = Label::createWithTTF("", "fonts/04B_03__.ttf", Responsive::getSize(12));
+    nameLabel->setAnchorPoint(Vec2(0.0f, 1.0f));
+    nameLabel->setPosition(topLeft);
+    this->addChild(nameLabel);
 
-	auto goldIcon = Sprite::create("Items/Gold.png");
-	goldIcon->setPosition(Vec2(x - 19.0f, y-1));
-	goldIcon->setScale(0.03f);
-	this->addChild(goldIcon);
+    gemLabel = Label::createWithTTF("", "fonts/04B_03__.ttf", Responsive::getSize(10));
+    gemLabel->setAnchorPoint(Vec2(1.0f, 1.0f));
+    gemLabel->setPosition(topRight);
+    this->addChild(gemLabel);
 
-	//GEM 
-	gemLabel = Label::createWithTTF("", "fonts/04B_03__.ttf", 8);
-	gemLabel->setColor(Color3B(255, 150, 255));
-	gemLabel->setPosition(Vec2(x + 40.0f, y));
-	gemLabel->enableOutline(Color4B::BLACK, 2);
-	this->addChild(gemLabel);
+    auto gemIcon = Sprite::create("Items/Gem.png");
+    gemIcon->setAnchorPoint(Vec2(1.0f, 1.0f));
+    gemIcon->setScale(Responsive::getScale(0.03f));
+    gemIcon->setName("GemIcon");
+    this->addChild(gemIcon);
 
-	auto gemIcon = Sprite::create("Items/Gem.png");
-	gemIcon->setPosition(Vec2(x + 21.0f, y-1));
-	gemIcon->setScale(0.03f);
-	this->addChild(gemIcon);
+    goldLabel = Label::createWithTTF("", "fonts/04B_03__.ttf", Responsive::getSize(10));
+    goldLabel->setAnchorPoint(Vec2(1.0f, 1.0f));
+    this->addChild(goldLabel);
 
-	// ==========================================
-	return true;
+    auto goldIcon = Sprite::create("Items/Gold.png");
+    goldIcon->setAnchorPoint(Vec2(1.0f, 1.0f));
+    goldIcon->setScale(Responsive::getScale(0.03f));
+    goldIcon->setName("GoldIcon"); 
+    this->addChild(goldIcon);
+
+    return true;
 }
 
 void PlayerHUD::updatePlayerData(const PlayerData& p) {
-	if (nameLabel) nameLabel->setString(p.username);
-	if (goldLabel)goldLabel->setString(to_string(p.gold));
-	if (gemLabel) gemLabel->setString(to_string(p.gems));
-}
+    if (nameLabel) nameLabel->setString(p.username);
 
+    if (gemLabel) {
+        gemLabel->setString(to_string(p.gems));
+        auto gemIcon = this->getChildByName("GemIcon");
+        if (gemIcon) {
+            float newX = gemLabel->getPositionX() - gemLabel->getContentSize().width - Responsive::getSize(5.0f);
+            gemIcon->setPosition(Vec2(newX, gemLabel->getPositionY()));
+        }
+    }
+
+    if (goldLabel) {
+        goldLabel->setString(to_string(p.gold));
+        auto gemIcon = this->getChildByName("GemIcon");
+        auto goldIcon = this->getChildByName("GoldIcon");
+        if (gemIcon && goldIcon) {
+            float goldLabelX = gemIcon->getPositionX() - Responsive::getSize(15.0f);
+            goldLabel->setPosition(Vec2(goldLabelX, gemLabel->getPositionY()));
+
+            float goldIconX = goldLabelX - goldLabel->getContentSize().width - Responsive::getSize(5.0f);
+            goldIcon->setPosition(Vec2(goldIconX, gemLabel->getPositionY()));
+        }
+    }
+}

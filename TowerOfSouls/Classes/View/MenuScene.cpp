@@ -17,6 +17,7 @@ bool MenuScene::init()
 	{
 		return false;
 	}
+
 	auto visibleSize = Director::getInstance()->getVisibleSize();
 	Vec2 origin = Director::getInstance()->getVisibleOrigin();
 	// ==========================================
@@ -32,12 +33,25 @@ bool MenuScene::init()
 
 	this->createButtons();
 	this->createUI();
-
 	auto hud = PlayerHUD::create();
 	this->addChild(hud, static_cast<int>(ZOrder::Info));
 
 	PlayerData p = _controller.loadPlayer();
 	hud->updatePlayerData(p);
+
+	float vol = UserDefault::getInstance()->getFloatForKey("MusicVolume", 1.0f);
+	string bgMusic = UserDefault::getInstance()->getStringForKey("MenuMusic", "Audio/Music/Alex_Morgan_Chillhop_Jazz_Sunny_Cafe.mp3");
+
+	int currentId = UserDefault::getInstance()->getIntegerForKey("bgmId", -1);
+
+	if (currentId == -1 || AudioEngine::getState(currentId) != AudioEngine::AudioState::PLAYING) {
+		AudioEngine::stopAll();
+		int newId = AudioEngine::play2d(bgMusic, true, vol);
+		UserDefault::getInstance()->setIntegerForKey("bgmId", newId);
+	}
+	else {
+		AudioEngine::setVolume(currentId, vol);
+	}
 	// ==========================================
 	return true;
 }
@@ -45,72 +59,59 @@ bool MenuScene::init()
 void MenuScene::createButtons() {
 	auto visibleSize = Director::getInstance()->getVisibleSize();
 	Vec2 origin = Director::getInstance()->getVisibleOrigin();
-	float x = origin.x + visibleSize.width * 0.10f;
-	float y = origin.y + visibleSize.height * 0.75f;
 
-	auto campaignLabel = Label::createWithTTF("Campaign", "fonts/alagard.ttf", 14);
-	campaignLabel->enableBold();
-	auto campainItem = MenuItemLabel::create(campaignLabel, [](Ref*) {
+	float menuX = origin.x + visibleSize.width * 0.12f;
+	float startY = origin.y + visibleSize.height * 0.8f;
+	float gapY = visibleSize.height * 0.12f;
 
-		});
-	campainItem->setColor(Color3B(240, 235, 220));
-	campainItem->setPosition(Vec2(x, y));
+	struct MenuData { string name; function<void(Ref*)> callback; };
+	vector<MenuData> menuItems = {
+		{"Campaign", [](Ref*) {
+	auto scene = CampaignScene::createScene();
+	Director::getInstance()->replaceScene(TransitionFade::create(0.5f, scene, Color3B(0, 0, 0)));
+}},
+		{"Endless", [](Ref*) {
+			auto scene = BattleScene::createScene(false, 1);
+			Director::getInstance()->replaceScene(TransitionFade::create(0.5f, scene, Color3B(0, 0, 0)));
+		}},
+		{"Team", [](Ref*) {
+			auto scene = TeamScene::createScene();
+			Director::getInstance()->replaceScene(TransitionFade::create(0.5f, scene, Color3B(0, 0, 0)));
+		}},
+		{"Shop", [](Ref*) {
+			auto scene = ShopScene::createScene();
+			Director::getInstance()->replaceScene(TransitionFade::create(0.5f, scene, Color3B(0, 0, 0)));
+		}},
+		{"Leaderboard", [](Ref*) {
+			auto scene = LeaderboardScene::createScene();
+			Director::getInstance()->replaceScene(TransitionFade::create(0.5f, scene, Color3B(0, 0, 0)));
+		}},
+		{"Settings", [](Ref*) {
+			auto scene = SettingScene::createScene();
+			Director::getInstance()->replaceScene(TransitionFade::create(0.5f, scene, Color3B(0, 0, 0)));
+		}},
+		{"Log Out", [this](Ref*) {
+			_controller.logout();
+			auto scene = AuthScene::createScene();
+			Director::getInstance()->replaceScene(TransitionFade::create(0.5f, scene, Color3B(0, 0, 0)));
+		}}
+	};
 
-	auto EndlessLabel = Label::createWithTTF("Endless", "fonts/alagard.ttf", 14);
-	EndlessLabel->enableBold();
-	auto EndlessItem = MenuItemLabel::create(EndlessLabel, [](Ref*) {
-		auto sceneEndless = BattleScene::createScene();
-		Director::getInstance()->replaceScene(TransitionFade::create(0.5f, sceneEndless, Color3B(0, 0, 0)));
-		});
-	EndlessItem->setColor(Color3B(240, 235, 220));
-	EndlessItem->setPosition(Vec2(x, y - 30.0f));
+	for (size_t i = 0; i < menuItems.size(); ++i) {
+		auto btn = ui::Button::create();
+		btn->setTitleText(menuItems[i].name);
+		btn->setTitleFontName("fonts/alagard.ttf");
+		btn->setTitleFontSize(18);
+		btn->setTitleColor(Color3B(240, 235, 220));
 
-	auto teamLabel = Label::createWithTTF("Team", "fonts/alagard.ttf", 14);
-	teamLabel->enableBold();
-	auto teamItem = MenuItemLabel::create(teamLabel, [](Ref*) {
-		auto sceneTeam = TeamScene::createScene();
-		Director::getInstance()->replaceScene(TransitionFade::create(0.5f, sceneTeam, Color3B(0, 0, 0)));
-		});
-	teamItem->setColor(Color3B(240, 235, 220));
-	teamItem->setPosition(Vec2(x, y - 60.0f));
+		btn->setAnchorPoint(Vec2(0.5f, 0.5f));
+		btn->setPosition(Vec2(menuX, startY - i * gapY));
 
-	auto shopLabel = Label::createWithTTF("Shop", "fonts/alagard.ttf", 14);
-	shopLabel->enableBold();
-	auto shopItem = MenuItemLabel::create(shopLabel, [](Ref*) {
-		auto sceneShop = ShopScene::createScene();
-		Director::getInstance()->replaceScene(TransitionFade::create(0.5f, sceneShop, Color3B(0, 0, 0)));
-		});
-	shopItem->setColor(Color3B(240, 235, 220));
-	shopItem->setPosition(Vec2(x, y - 90.0f));
-
-	auto rankLabel = Label::createWithTTF("Leaderboard", "fonts/alagard.ttf", 14);
-	rankLabel->enableBold();
-	auto rankItem = MenuItemLabel::create(rankLabel, [](Ref*) {
-		auto sceneEndless = LeaderboardScene::createScene();
-		Director::getInstance()->replaceScene(TransitionFade::create(0.5f, sceneEndless, Color3B(0, 0, 0)));
-		});
-	rankItem->setColor(Color3B(240, 235, 220));
-	rankItem->setPosition(Vec2(x, y - 120.0f));
-
-	auto settingLable = Label::createWithTTF("Settings", "fonts/alagard.ttf", 14);
-	settingLable->enableBold();
-	auto settingItem = MenuItemLabel::create(settingLable, [](Ref*) {
-
-		});
-	settingItem->setColor(Color3B(240, 235, 220));
-	settingItem->setPosition(Vec2(x, y - 150.0f));
-
-	auto logOutLabel = Label::createWithTTF("Log Out", "fonts/alagard.ttf", 14);
-	logOutLabel->enableBold();
-	auto logOutItem = MenuItemLabel::create(logOutLabel, [](Ref*) {
-
-		});
-	logOutItem->setColor(Color3B(240, 235, 220));
-	logOutItem->setPosition(Vec2(x, y - 180.0f));
-
-	auto menu = Menu::create(campainItem, EndlessItem, teamItem, shopItem, rankItem, settingItem, logOutItem, nullptr);
-	menu->setPosition(Vec2::ZERO);
-	this->addChild(menu, static_cast<int>(ZOrder::Button));
+		if (menuItems[i].callback) {
+			btn->addClickEventListener(menuItems[i].callback);
+		}
+		this->addChild(btn, static_cast<int>(ZOrder::Button));
+	}
 }
 
 void MenuScene::createUI() {
@@ -124,4 +125,3 @@ void MenuScene::createUI() {
 	sideMenuBg->setPosition(Vec2::ZERO);
 	this->addChild(sideMenuBg, static_cast<int>(ZOrder::BGButton));
 }
-

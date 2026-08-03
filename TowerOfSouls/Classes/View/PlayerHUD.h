@@ -5,6 +5,7 @@
 #include "GameData.h"
 #include "ui/CocosGUI.h"
 #include "MenuScene.h"
+#include "View/ResponsiveHelper.h"
 #include <iostream>
 
 using namespace std;

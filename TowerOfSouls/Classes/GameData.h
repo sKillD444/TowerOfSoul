@@ -9,13 +9,14 @@ struct BattleCardData {
     int id;
     string card_id;
     string name;
-    int level;
-    int star;
+    int level = 1;
+    int star = 1;
     float hp;
+    float currentHp;
     float atk;
     int cost;
     string role;
-    float currentHp = 0;
+    string type;
 };
 
 struct PlayerData {

@@ -24,10 +24,15 @@
 
 #include "AppDelegate.h"
 #include "View/MenuScene.h"
+#include "View/BattleScene.h"
+#include "View/TeamScene.h"
+#include "View/ShopScene.h"
+#include "View/AuthScene.h"
 #include "mysql_api.h"
 
- // #define USE_AUDIO_ENGINE 1
- // #define USE_SIMPLE_AUDIO_ENGINE 1
+#if (CC_TARGET_PLATFORM == CC_PLATFORM_WIN32) || (CC_TARGET_PLATFORM == CC_PLATFORM_MAC) || (CC_TARGET_PLATFORM == CC_PLATFORM_LINUX)
+#include "glfw3.h"
+#endif
 
 #if USE_AUDIO_ENGINE && USE_SIMPLE_AUDIO_ENGINE
 #error "Don't use AudioEngine and SimpleAudioEngine at the same time. Please just select one in your game!"
@@ -61,29 +66,25 @@ AppDelegate::~AppDelegate()
 #endif
 }
 
-// if you want a different context, modify the value of glContextAttrs
-// it will affect all platforms
 void AppDelegate::initGLContextAttrs()
 {
-    // set OpenGL context attributes: red,green,blue,alpha,depth,stencil,multisamplesCount
     GLContextAttrs glContextAttrs = { 8, 8, 8, 8, 24, 8, 0 };
-
     GLView::setGLContextAttrs(glContextAttrs);
 }
 
-// if you want to use the package manager to install more packages,  
-// don't modify or remove this function
 static int register_all_packages()
 {
-    return 0; //flag for packages manager
+    return 0;
 }
 
 bool AppDelegate::applicationDidFinishLaunching() {
-    // initialize director
     auto director = Director::getInstance();
     auto glview = director->getOpenGLView();
+
     if (!glview) {
 #if (CC_TARGET_PLATFORM == CC_PLATFORM_WIN32) || (CC_TARGET_PLATFORM == CC_PLATFORM_MAC) || (CC_TARGET_PLATFORM == CC_PLATFORM_LINUX)
+        glfwWindowHint(GLFW_RESIZABLE, GL_TRUE);
+
         glview = GLViewImpl::createWithRect("MVCCardGame", cocos2d::Rect(0, 0, 1600, 880));
 #else
         glview = GLViewImpl::create("MVCCardGame");
@@ -91,34 +92,24 @@ bool AppDelegate::applicationDidFinishLaunching() {
         director->setOpenGLView(glview);
     }
 
-    // turn on display FPS
     director->setDisplayStats(true);
-
-    // set FPS. the default value is 1.0/60 if you don't call this
     director->setAnimationInterval(1.0f / 60);
 
-    // Set the design resolution
-    glview->setDesignResolutionSize(designResolutionSize.width, designResolutionSize.height, ResolutionPolicy::NO_BORDER);
+    glview->setDesignResolutionSize(designResolutionSize.width, designResolutionSize.height, ResolutionPolicy::FIXED_HEIGHT);
     auto frameSize = glview->getFrameSize();
-    // if the frame's height is larger than the height of medium size.
-    if (frameSize.height > mediumResolutionSize.height)
-    {
+
+    if (frameSize.height > mediumResolutionSize.height) {
         director->setContentScaleFactor(MIN(largeResolutionSize.height / designResolutionSize.height, largeResolutionSize.width / designResolutionSize.width));
     }
-    // if the frame's height is larger than the height of small size.
-    else if (frameSize.height > smallResolutionSize.height)
-    {
+    else if (frameSize.height > smallResolutionSize.height) {
         director->setContentScaleFactor(MIN(mediumResolutionSize.height / designResolutionSize.height, mediumResolutionSize.width / designResolutionSize.width));
     }
-    // if the frame's height is smaller than the height of medium size.
-    else
-    {
+    else {
         director->setContentScaleFactor(MIN(smallResolutionSize.height / designResolutionSize.height, smallResolutionSize.width / designResolutionSize.width));
     }
 
     register_all_packages();
 
-    // ==========================================
     auto& db = MySQLCli::getInstance();
     bool isConnected = db.connect("127.0.0.1", 3306, "root", "", "towerofsoul");
 
@@ -129,19 +120,18 @@ bool AppDelegate::applicationDidFinishLaunching() {
         CCLOG("LOI KET NOI MYSQL: %s", db.lastError().c_str());
     }
 
-
     auto spritecache = SpriteFrameCache::getInstance();
     spritecache->addSpriteFramesWithFile("Cards/Monster.plist");
     spritecache->addSpriteFramesWithFile("Cards/Player.plist");
+    spritecache->addSpriteFramesWithFile("Cards/Boss.plist");
     spritecache->addSpriteFramesWithFile("Animation/CardDes.plist");
 
-    auto scene = MenuScene::createScene();
+    auto scene = AuthScene::createScene();
     director->runWithScene(scene);
-    // ==========================================
+
     return true;
 }
 
-// This function will be called when the app is inactive. Note, when receiving a phone call it is invoked.
 void AppDelegate::applicationDidEnterBackground() {
     Director::getInstance()->stopAnimation();
 
@@ -153,7 +143,6 @@ void AppDelegate::applicationDidEnterBackground() {
 #endif
 }
 
-// this function will be called when the app is active again
 void AppDelegate::applicationWillEnterForeground() {
     Director::getInstance()->startAnimation();
 

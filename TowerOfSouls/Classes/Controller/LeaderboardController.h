@@ -10,7 +10,7 @@ using namespace std;
 class LeaderboardController {
 public:
 	void updateLeaderboard(int userId, int score) {
-		bool flag=LeaderboardModel::getInstance().findPlayerLeaderboard(userId);
+		bool flag = LeaderboardModel::getInstance().findPlayerLeaderboard(userId);
 		if (flag) {
 			LeaderboardModel::getInstance().updateLeaderboard(userId, score);
 		}
@@ -19,8 +19,12 @@ public:
 		}
 	}
 
-	std::vector<LeaderboardData> getTop10Players() {
+	vector<LeaderboardData> getTop10Players() {
 		return LeaderboardModel::getInstance().getTop10Players();
+	}
+
+	vector<LeaderboardData> getTop10PlayersBy(int criteria) {
+		return LeaderboardModel::getInstance().getTop10PlayersBy(criteria);
 	}
 };
 

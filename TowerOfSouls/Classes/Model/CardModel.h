@@ -23,8 +23,10 @@ public:
     BattleCardData getRNDCard(int cost);
 
 	bool buyCard(int userId, const BattleCardData& cardData);
-
+    bool upgradeCardLevel(int ownedCardId, int newLevel, int bonusHp, int bonusAtk);
     vector<BattleCardData> spawnEnemies(int count);
+    vector<pair<BattleCardData, int>> getCampaignEnemies(int stageId, int wave);
+    int getStageGoldReward(int stageNumber);
 };
 
 #endif

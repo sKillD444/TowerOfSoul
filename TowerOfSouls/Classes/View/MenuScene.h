@@ -8,7 +8,12 @@
 #include "View/LeaderboardScene.h"
 #include "View/ShopScene.h"
 #include "View/TeamScene.h"
+#include "View/AuthScene.h"
+#include "View/CampaignScene.h"
+#include "View/SettingScene.h"
 #include "Controller/PlayerController.h"
+#include "audio/include/AudioEngine.h"
+using namespace cocos2d::experimental;
 
 using namespace std;
 

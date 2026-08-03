@@ -14,9 +14,13 @@ enum class BattleState {
 
 class BattleController {
 public:
-    vector<BattleCardData> loadPlayerDeck() {
-        return CardModel::getInstance().getPlayerDeck(1);
-    }
+	vector<BattleCardData> loadPlayerDeck() {
+		int currentUserId = cocos2d::UserDefault::getInstance()->getIntegerForKey("CURRENT_USER_ID", -1);
+		if (currentUserId != -1) {
+			return CardModel::getInstance().getPlayerDeck(currentUserId);
+		}
+		return vector<BattleCardData>();
+	}
 
 	vector<BattleCardData> getShopRoll(int round) {
         return CardModel::getInstance().getShopRoll(round);
@@ -86,6 +90,37 @@ public:
 			card.currentHp = card.hp;
 			break;
 		}
+	}
+
+	int getUpgradeCost(int currentLevel) {
+		if (currentLevel >= 5) return -1; 
+		return 10 *pow(2, currentLevel);
+	}
+
+	bool upgradeCard(int userId, BattleCardData& card, int& playerGold) {
+		int cost = getUpgradeCost(card.level);
+		if (cost == -1 || playerGold < cost) return false;
+
+		int bonusHp = 30;
+		int bonusAtk = 10;
+
+		bool success = CardModel::getInstance().upgradeCardLevel(card.id, card.level + 1, bonusHp, bonusAtk);
+		if (success) {
+			card.level += 1;
+			card.hp += bonusHp;
+			card.currentHp += bonusHp;
+			card.atk += bonusAtk;
+			return true;
+		}
+		return false;
+	}
+
+	vector<pair<BattleCardData, int>> getCampaignEnemies(int stageId, int wave) {
+		return CardModel::getInstance().getCampaignEnemies(stageId, wave);
+	}
+
+	int getStageGoldReward(int stageNumber) {
+		return CardModel::getInstance().getStageGoldReward(stageNumber);
 	}
 };
 

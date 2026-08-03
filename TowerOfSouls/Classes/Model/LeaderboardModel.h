@@ -14,12 +14,13 @@ public:
         return instance;
     }
 
-	void loadLeaderboard();
-	void updateLeaderboard(int userId, int score);
-	void addLeaderboardEntry(int userId, int score);  
+    void loadLeaderboard();
+    void updateLeaderboard(int userId, int score);
+    void addLeaderboardEntry(int userId, int score);
     bool findPlayerLeaderboard(int userId);
 
-    std::vector<LeaderboardData> getTop10Players();
+    vector<LeaderboardData> getTop10Players();
+    vector<LeaderboardData> getTop10PlayersBy(int criteria);
 };
 
 #endif

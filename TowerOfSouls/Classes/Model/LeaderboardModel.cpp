@@ -35,14 +35,50 @@ bool LeaderboardModel::findPlayerLeaderboard(int userId) {
     return false;
 }
 
-std::vector<LeaderboardData> LeaderboardModel::getTop10Players() {
-    std::vector<LeaderboardData> top10;
+vector<LeaderboardData> LeaderboardModel::getTop10Players() {
+    vector<LeaderboardData> top10;
     auto& db = MySQLCli::getInstance();
 
     string sql = "SELECT u.username, l.highest_floor "
         "FROM endless_leaderboard l "
         "JOIN users u ON l.user_id = u.id "
         "ORDER BY l.highest_floor DESC LIMIT 10";
+
+    DBResult* res = db.query(sql);
+
+    if (res) {
+        int currentRank = 1;
+        char** row;
+        while ((row = res->fetchRow()) != nullptr) {
+            LeaderboardData data;
+            data.rank = currentRank++;
+            data.username = row[0];
+            data.highest_floor = stoi(row[1]);
+            top10.push_back(data);
+        }
+        delete res;
+    }
+    return top10;
+}
+
+
+vector<LeaderboardData> LeaderboardModel::getTop10PlayersBy(int criteria) {
+    vector<LeaderboardData> top10;
+    auto& db = MySQLCli::getInstance();
+    string sql = "";
+
+    if (criteria == 0) {
+        sql = "SELECT u.username, l.highest_floor FROM endless_leaderboard l JOIN users u ON l.user_id = u.id ORDER BY l.highest_floor DESC LIMIT 10";
+    }
+    else if (criteria == 1) { 
+        sql = "SELECT username, gems FROM users ORDER BY gems DESC LIMIT 10";
+    }
+    else if (criteria == 2) {
+        sql = "SELECT username, current_stage FROM users ORDER BY current_stage DESC LIMIT 10";
+    }
+    else if (criteria == 3) {
+        sql = "SELECT u.username, COUNT(o.user_id) as total_cards FROM users u JOIN owned_cards o ON u.id = o.user_id GROUP BY u.id ORDER BY total_cards DESC LIMIT 10";
+    }
 
     DBResult* res = db.query(sql);
 
