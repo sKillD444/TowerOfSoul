@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Máy chủ: 127.0.0.1
--- Thời gian đã tạo: Th7 16, 2026 lúc 01:00 AM
+-- Thời gian đã tạo: Th8 08, 2026 lúc 08:12 PM
 -- Phiên bản máy phục vụ: 10.4.32-MariaDB
 -- Phiên bản PHP: 8.2.12
 
@@ -25,7 +25,6 @@ SET time_zone = "+00:00";
 
 --
 -- Cấu trúc bảng cho bảng `card_definitions`
--- (Đã xóa 4 cột: evolve_at_level, evolved_name, evolve_atk_gain, evolve_hp_gain)
 --
 
 CREATE TABLE `card_definitions` (
@@ -135,6 +134,7 @@ INSERT INTO `endless_leaderboard` (`user_id`, `highest_floor`, `rank_position`, 
 
 --
 -- Cấu trúc bảng cho bảng `owned_cards`
+-- (Đã xóa cột exp, evolve_stage, slot_index theo yêu cầu)
 --
 
 CREATE TABLE `owned_cards` (
@@ -143,87 +143,84 @@ CREATE TABLE `owned_cards` (
   `card_id` varchar(50) NOT NULL,
   `star` int(11) NOT NULL DEFAULT 1,
   `level` int(11) NOT NULL DEFAULT 1,
-  `exp` int(11) NOT NULL DEFAULT 0,
-  `evolve_stage` int(11) NOT NULL DEFAULT 0,
   `evolve_atk_bonus` int(11) NOT NULL DEFAULT 0,
-  `evolve_hp_bonus` int(11) NOT NULL DEFAULT 0,
-  `slot_index` int(11) NOT NULL DEFAULT 0
+  `evolve_hp_bonus` int(11) NOT NULL DEFAULT 0
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Đang đổ dữ liệu cho bảng `owned_cards`
 --
 
-INSERT INTO `owned_cards` (`id`, `user_id`, `card_id`, `star`, `level`, `exp`, `evolve_stage`, `evolve_atk_bonus`, `evolve_hp_bonus`, `slot_index`) VALUES
-(1, 1, 'LoiCo', 1, 1, 0, 0, 0, 0, 0),
-(2, 1, 'LinhKhoi', 1, 5, 0, 0, 40, 160, 0),
-(3, 1, 'MocLan', 1, 5, 0, 0, 20, 60, 0),
-(4, 1, 'HoaTuoc', 1, 5, 0, 0, 40, 120, 0),
-(5, 1, 'ThietAnh', 1, 5, 0, 0, 20, 60, 0),
-(6, 1, 'LamTinh', 1, 1, 0, 0, 0, 0, 0),
-(7, 1, 'HoSon', 1, 1, 0, 0, 0, 0, 0),
-(8, 1, 'LamNguyet', 1, 1, 0, 0, 0, 0, 0),
-(9, 1, 'DiemLa', 1, 1, 0, 0, 0, 0, 0),
-(10, 1, 'LamHiep', 1, 5, 0, 0, 40, 120, 0),
-(22, 1, 'BichNha', 1, 1, 0, 0, 0, 0, 0),
-(23, 1, 'HoSon', 1, 1, 0, 0, 0, 0, 0),
-(24, 1, 'LamTinh', 1, 1, 0, 0, 0, 0, 0),
-(25, 1, 'ThietDinh', 1, 1, 0, 0, 0, 0, 0),
-(26, 1, 'LamNguyet', 1, 1, 0, 0, 0, 0, 0),
-(27, 1, 'ThietAnh', 1, 1, 0, 0, 0, 0, 0),
-(28, 1, 'DiemLa', 1, 1, 0, 0, 0, 0, 0),
-(29, 1, 'BichNha', 1, 1, 0, 0, 0, 0, 0),
-(30, 1, 'DiemLa', 1, 5, 0, 0, 40, 120, 0),
-(31, 1, 'CuSon', 1, 1, 0, 0, 0, 0, 0),
-(32, 1, 'CuSon', 1, 1, 0, 0, 0, 0, 0),
-(33, 1, 'BaLong', 1, 1, 0, 0, 0, 0, 0),
-(34, 1, 'DaAnh', 1, 1, 0, 0, 0, 0, 0),
-(35, 1, 'DiemLa', 1, 1, 0, 0, 0, 0, 0),
-(36, 1, 'ThietThanh', 1, 1, 0, 0, 0, 0, 0),
-(37, 1, 'LamHiep', 1, 1, 0, 0, 0, 0, 0),
-(38, 1, 'VoTran', 1, 1, 0, 0, 0, 0, 0),
-(39, 1, 'BaLong', 1, 1, 0, 0, 0, 0, 0),
-(40, 1, 'LoiCo', 1, 1, 0, 0, 0, 0, 0),
-(41, 1, 'PhongNhan', 1, 1, 0, 0, 0, 0, 0),
-(42, 1, 'DiemLa', 1, 1, 0, 0, 0, 0, 0),
-(43, 1, 'ThietAnh', 1, 1, 0, 0, 0, 0, 0),
-(44, 1, 'LamTinh', 1, 1, 0, 0, 0, 0, 0),
-(45, 1, 'HacMoc', 1, 1, 0, 0, 0, 0, 0),
-(46, 1, 'AnVe', 1, 1, 0, 0, 0, 0, 0),
-(47, 1, 'LamTinh', 1, 1, 0, 0, 0, 0, 0),
-(48, 1, 'AnVe', 1, 1, 0, 0, 0, 0, 0),
-(49, 1, 'LamHiep', 1, 1, 0, 0, 0, 0, 0),
-(50, 1, 'LamTinh', 1, 1, 0, 0, 0, 0, 0),
-(51, 1, 'NhatDao', 1, 1, 0, 0, 0, 0, 0),
-(52, 1, 'HongDiep', 1, 1, 0, 0, 0, 0, 0),
-(53, 1, 'DaAnh', 1, 1, 0, 0, 0, 0, 0),
-(54, 1, 'HuyetTram', 1, 1, 0, 0, 0, 0, 0),
-(55, 1, 'LamTinh', 1, 1, 0, 0, 0, 0, 0),
-(56, 1, 'NhatDao', 1, 1, 0, 0, 0, 0, 0),
-(57, 1, 'HungKien', 1, 1, 0, 0, 0, 0, 0),
-(58, 1, 'XichCuong', 1, 1, 0, 0, 0, 0, 0),
-(59, 1, 'NhatDao', 1, 1, 0, 0, 0, 0, 0),
-(60, 1, 'DiemLa', 1, 1, 0, 0, 0, 0, 0),
-(61, 1, 'BichNha', 1, 1, 0, 0, 0, 0, 0),
-(62, 1, 'HuyetTram', 1, 1, 0, 0, 0, 0, 0),
-(63, 1, 'CuSon', 1, 1, 0, 0, 0, 0, 0),
-(64, 1, 'PhongNhan', 1, 1, 0, 0, 0, 0, 0),
-(65, 1, 'HacMoc', 1, 1, 0, 0, 0, 0, 0),
-(66, 1, 'ThietAnh', 1, 1, 0, 0, 0, 0, 0),
-(67, 1, 'AmHuong', 1, 1, 0, 0, 0, 0, 0),
-(68, 1, 'HungKien', 1, 1, 0, 0, 0, 0, 0),
-(69, 1, 'LinhKhoi', 1, 1, 0, 0, 0, 0, 0),
-(70, 1, 'NhatDao', 1, 1, 0, 0, 0, 0, 0),
-(71, 1, 'ThietDinh', 1, 1, 0, 0, 0, 0, 0),
-(72, 1, 'HacMoc', 1, 1, 0, 0, 0, 0, 0),
-(73, 1, 'LamVu', 1, 1, 0, 0, 0, 0, 0),
-(74, 1, 'HacMoc', 1, 1, 0, 0, 0, 0, 0);
+INSERT INTO `owned_cards` (`id`, `user_id`, `card_id`, `star`, `level`, `evolve_atk_bonus`, `evolve_hp_bonus`) VALUES
+(1, 1, 'LoiCo', 1, 2, 10, 30),
+(2, 1, 'LinhKhoi', 1, 5, 40, 160),
+(3, 1, 'MocLan', 1, 5, 20, 60),
+(4, 1, 'HoaTuoc', 1, 5, 40, 120),
+(5, 1, 'ThietAnh', 1, 5, 20, 60),
+(6, 1, 'LamTinh', 1, 1, 0, 0),
+(7, 1, 'HoSon', 1, 1, 0, 0),
+(8, 1, 'LamNguyet', 1, 1, 0, 0),
+(9, 1, 'DiemLa', 1, 1, 0, 0),
+(10, 1, 'LamHiep', 1, 5, 40, 120),
+(22, 1, 'BichNha', 1, 1, 0, 0),
+(23, 1, 'HoSon', 1, 1, 0, 0),
+(24, 1, 'LamTinh', 1, 1, 0, 0),
+(25, 1, 'ThietDinh', 1, 1, 0, 0),
+(26, 1, 'LamNguyet', 1, 1, 0, 0),
+(27, 1, 'ThietAnh', 1, 1, 0, 0),
+(28, 1, 'DiemLa', 1, 1, 0, 0),
+(29, 1, 'BichNha', 1, 1, 0, 0),
+(30, 1, 'DiemLa', 1, 5, 40, 120),
+(31, 1, 'CuSon', 1, 1, 0, 0),
+(32, 1, 'CuSon', 1, 1, 0, 0),
+(33, 1, 'BaLong', 1, 1, 0, 0),
+(34, 1, 'DaAnh', 1, 1, 0, 0),
+(35, 1, 'DiemLa', 1, 1, 0, 0),
+(36, 1, 'ThietThanh', 1, 1, 0, 0),
+(37, 1, 'LamHiep', 1, 1, 0, 0),
+(38, 1, 'VoTran', 1, 1, 0, 0),
+(39, 1, 'BaLong', 1, 1, 0, 0),
+(40, 1, 'LoiCo', 1, 1, 0, 0),
+(41, 1, 'PhongNhan', 1, 1, 0, 0),
+(42, 1, 'DiemLa', 1, 1, 0, 0),
+(43, 1, 'ThietAnh', 1, 1, 0, 0),
+(44, 1, 'LamTinh', 1, 1, 0, 0),
+(45, 1, 'HacMoc', 1, 1, 0, 0),
+(46, 1, 'AnVe', 1, 1, 0, 0),
+(47, 1, 'LamTinh', 1, 1, 0, 0),
+(48, 1, 'AnVe', 1, 1, 0, 0),
+(49, 1, 'LamHiep', 1, 1, 0, 0),
+(50, 1, 'LamTinh', 1, 1, 0, 0),
+(51, 1, 'NhatDao', 1, 1, 0, 0),
+(52, 1, 'HongDiep', 1, 1, 0, 0),
+(53, 1, 'DaAnh', 1, 1, 0, 0),
+(54, 1, 'HuyetTram', 1, 1, 0, 0),
+(55, 1, 'LamTinh', 1, 1, 0, 0),
+(56, 1, 'NhatDao', 1, 1, 0, 0),
+(57, 1, 'HungKien', 1, 1, 0, 0),
+(58, 1, 'XichCuong', 1, 1, 0, 0),
+(59, 1, 'NhatDao', 1, 1, 0, 0),
+(60, 1, 'DiemLa', 1, 1, 0, 0),
+(61, 1, 'BichNha', 1, 1, 0, 0),
+(62, 1, 'HuyetTram', 1, 1, 0, 0),
+(63, 1, 'CuSon', 1, 1, 0, 0),
+(64, 1, 'PhongNhan', 1, 1, 0, 0),
+(65, 1, 'HacMoc', 1, 1, 0, 0),
+(66, 1, 'ThietAnh', 1, 1, 0, 0),
+(67, 1, 'AmHuong', 1, 1, 0, 0),
+(68, 1, 'HungKien', 1, 1, 0, 0),
+(69, 1, 'LinhKhoi', 1, 1, 0, 0),
+(70, 1, 'NhatDao', 1, 1, 0, 0),
+(71, 1, 'ThietDinh', 1, 1, 0, 0),
+(72, 1, 'HacMoc', 1, 1, 0, 0),
+(73, 1, 'LamVu', 1, 1, 0, 0),
+(74, 1, 'HacMoc', 1, 1, 0, 0),
+(75, 1, 'DiemLa', 1, 1, 0, 0);
 
 -- --------------------------------------------------------
 
 --
 -- Cấu trúc bảng cho bảng `stages`
--- (Đã cập nhật 12 ải chuẩn theo yêu cầu)
 --
 
 CREATE TABLE `stages` (
@@ -255,8 +252,7 @@ INSERT INTO `stages` (`stage_number`, `name`, `enemy_bonus_hp`, `is_boss`, `gold
 -- --------------------------------------------------------
 
 --
--- Cấu trúc bảng mới: `stage_enemies`
--- (Lưu thông tin quái xuất hiện theo từng Turn cho 12 ải)
+-- Cấu trúc bảng cho bảng `stage_enemies`
 --
 
 CREATE TABLE `stage_enemies` (
@@ -272,18 +268,15 @@ CREATE TABLE `stage_enemies` (
 --
 
 INSERT INTO `stage_enemies` (`id`, `stage_number`, `turn_number`, `card_id`, `position_slot`) VALUES
--- Ải 1 đến 3 (1 Turn)
 (1, 1, 1, 'TaVu', 1),
 (2, 1, 1, 'HuyetDao', 2),
 (3, 2, 1, 'DaoTac', 1),
 (4, 2, 1, 'YeuKiem', 2),
 (5, 3, 1, 'DotKich', 1),
 (6, 3, 1, 'TienPhong', 2),
--- Ải 4 Boss (1 Turn)
 (7, 4, 1, 'skull', 1),
 (8, 4, 1, 'blue_wolf', 2),
 (9, 4, 1, 'black_wolf', 3),
--- Ải 5 đến 7 (2 Turn)
 (10, 5, 1, 'DaChuy', 1),
 (11, 5, 1, 'SongDao', 2),
 (12, 5, 2, 'TieuCot', 1),
@@ -296,10 +289,8 @@ INSERT INTO `stage_enemies` (`id`, `stage_number`, `turn_number`, `card_id`, `po
 (19, 7, 1, 'ThietThuan', 2),
 (20, 7, 2, 'CuLuc', 1),
 (21, 7, 2, 'VoUy', 2),
--- Ải 8 Boss (1 Turn)
 (22, 8, 1, 'lich', 1),
 (23, 8, 1, 'death_clone', 2),
--- Ải 9 đến 11 (2 Turn)
 (24, 9, 1, 'PhaChuy', 1),
 (25, 9, 1, 'TaVu', 2),
 (26, 9, 2, 'HuyetDao', 1),
@@ -312,7 +303,6 @@ INSERT INTO `stage_enemies` (`id`, `stage_number`, `turn_number`, `card_id`, `po
 (33, 11, 1, 'TieuCot', 2),
 (34, 11, 2, 'CotChuy', 1),
 (35, 11, 2, 'CotThuong', 2),
--- Ải 12 Boss (1 Turn)
 (36, 12, 1, 'death', 1);
 
 -- --------------------------------------------------------
@@ -326,30 +316,40 @@ CREATE TABLE `users` (
   `username` varchar(50) NOT NULL,
   `password` varchar(100) NOT NULL,
   `gold` int(11) NOT NULL DEFAULT 0,
-  `gems` int(11) NOT NULL DEFAULT 0,
-  `current_stage` int(11) NOT NULL DEFAULT 1,
-  `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
-  `last_login` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp()
+  `gems` int(11) NOT NULL DEFAULT 0
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Đang đổ dữ liệu cho bảng `users`
 --
 
-INSERT INTO `users` (`id`, `username`, `password`, `gold`, `gems`, `current_stage`, `created_at`, `last_login`) VALUES
-(1, 'Dang', 'pass_hashed_123', 5880, 8950, 5, '2026-04-17 00:25:07', '2026-07-13 16:57:36'),
-(2, 'Player_Test', 'pass_hashed_456', 5000, 10, 5, '2026-04-17 00:25:07', '2026-04-17 00:25:07'),
-(3, 'Levi', 'pass_hashed_111', 12000, 500, 8, '2026-05-01 03:00:00', '2026-06-01 13:00:00'),
-(4, 'SofM', 'pass_hashed_222', 45000, 1200, 10, '2026-05-02 07:30:00', '2026-06-02 02:15:00'),
-(5, 'FakerVN', 'pass_hashed_333', 8900, 150, 6, '2026-05-15 01:20:00', '2026-06-01 11:45:00'),
-(6, 'Optimus', 'pass_hashed_444', 3200, 50, 4, '2026-05-20 04:10:00', '2026-05-28 15:30:00'),
-(7, 'Zeros', 'pass_hashed_555', 15600, 800, 7, '2026-04-25 02:00:00', '2026-06-01 14:00:00'),
-(8, 'Slayder', 'pass_hashed_666', 2100, 20, 3, '2026-05-28 09:40:00', '2026-05-29 03:10:00'),
-(9, 'Bie', 'pass_hashed_777', 6700, 310, 5, '2026-05-10 06:25:00', '2026-06-01 08:20:00'),
-(10, 'Kati', 'pass_hashed_888', 9400, 420, 6, '2026-05-12 12:50:00', '2026-06-02 01:05:00'),
-(11, 'Kiaya', 'pass_hashed_999', 34000, 950, 9, '2026-04-18 00:15:00', '2026-06-02 04:30:00'),
-(12, 'Hello', 'dang20004', 200, 10, 1, '2026-07-05 13:28:26', '2026-07-05 13:28:26'),
-(13, 'DangNe', 'Dang2004', 200, 10, 1, '2026-07-06 11:33:57', '2026-07-06 11:33:57');
+INSERT INTO `users` (`id`, `username`, `password`, `gold`, `gems`) VALUES
+(1, 'Dang', 'pass_hashed_123', 5770, 8950),
+(2, 'Player_Test', 'pass_hashed_456', 5000, 10),
+(3, 'Levi', 'pass_hashed_111', 12000, 500),
+(4, 'SofM', 'pass_hashed_222', 45000, 1200),
+(5, 'FakerVN', 'pass_hashed_333', 8900, 150),
+(6, 'Optimus', 'pass_hashed_444', 3200, 50),
+(7, 'Zeros', 'pass_hashed_555', 15600, 800),
+(8, 'Slayder', 'pass_hashed_666', 2100, 20),
+(9, 'Bie', 'pass_hashed_777', 6700, 310),
+(10, 'Kati', 'pass_hashed_888', 9400, 420),
+(11, 'Kiaya', 'pass_hashed_999', 34000, 950),
+(12, 'Hello', 'dang20004', 200, 10),
+(13, 'DangNe', 'Dang2004', 200, 10);
+
+--
+-- Bẫy `users`
+--
+DELIMITER $$
+CREATE TRIGGER `after_user_insert` AFTER INSERT ON `users` FOR EACH ROW BEGIN
+    -- Khi 1 dòng mới thêm vào bảng 'users', tự động insert 1 dòng vào 'user_stage_progress'
+    -- is_cleared = 0 nghĩa là vừa mở khóa ải 1 nhưng chưa vượt qua
+    INSERT INTO user_stage_progress (user_id, stage_number, is_cleared)
+    VALUES (NEW.id, 1, 0);
+END
+$$
+DELIMITER ;
 
 -- --------------------------------------------------------
 
@@ -361,9 +361,84 @@ CREATE TABLE `user_stage_progress` (
   `id` int(11) NOT NULL,
   `user_id` int(11) NOT NULL,
   `stage_number` int(11) NOT NULL,
-  `stars_earned` int(11) NOT NULL DEFAULT 0,
   `is_cleared` tinyint(1) NOT NULL DEFAULT 0
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Đang đổ dữ liệu cho bảng `user_stage_progress`
+--
+
+INSERT INTO `user_stage_progress` (`id`, `user_id`, `stage_number`, `is_cleared`) VALUES
+(1, 1, 1, 1),
+(2, 1, 2, 1),
+(3, 1, 3, 1),
+(4, 1, 4, 1),
+(5, 1, 5, 1),
+(6, 2, 1, 1),
+(7, 2, 2, 1),
+(8, 2, 3, 1),
+(9, 2, 4, 1),
+(10, 2, 5, 1),
+(11, 3, 1, 1),
+(12, 3, 2, 1),
+(13, 3, 3, 1),
+(14, 3, 4, 1),
+(15, 3, 5, 1),
+(16, 3, 6, 1),
+(17, 3, 7, 1),
+(18, 3, 8, 1),
+(19, 4, 1, 1),
+(20, 4, 2, 1),
+(21, 4, 3, 1),
+(22, 4, 4, 1),
+(23, 4, 5, 1),
+(24, 4, 6, 1),
+(25, 4, 7, 1),
+(26, 4, 8, 1),
+(27, 4, 9, 1),
+(28, 4, 10, 1),
+(29, 5, 1, 1),
+(30, 5, 2, 1),
+(31, 5, 3, 1),
+(32, 5, 4, 1),
+(33, 5, 5, 1),
+(34, 5, 6, 1),
+(35, 6, 1, 1),
+(36, 6, 2, 1),
+(37, 6, 3, 1),
+(38, 6, 4, 1),
+(39, 7, 1, 1),
+(40, 7, 2, 1),
+(41, 7, 3, 1),
+(42, 7, 4, 1),
+(43, 7, 5, 1),
+(44, 7, 6, 1),
+(45, 7, 7, 1),
+(46, 8, 1, 1),
+(47, 8, 2, 1),
+(48, 8, 3, 1),
+(49, 9, 1, 1),
+(50, 9, 2, 1),
+(51, 9, 3, 1),
+(52, 9, 4, 1),
+(53, 9, 5, 1),
+(54, 10, 1, 1),
+(55, 10, 2, 1),
+(56, 10, 3, 1),
+(57, 10, 4, 1),
+(58, 10, 5, 1),
+(59, 10, 6, 1),
+(60, 11, 1, 1),
+(61, 11, 2, 1),
+(62, 11, 3, 1),
+(63, 11, 4, 1),
+(64, 11, 5, 1),
+(65, 11, 6, 1),
+(66, 11, 7, 1),
+(67, 11, 8, 1),
+(68, 11, 9, 1),
+(69, 12, 1, 1),
+(70, 13, 1, 1);
 
 -- --------------------------------------------------------
 
@@ -377,6 +452,15 @@ CREATE TABLE `user_teams` (
   `team_type` varchar(50) NOT NULL,
   `card_slot_index` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Đang đổ dữ liệu cho bảng `user_teams`
+--
+
+INSERT INTO `user_teams` (`id`, `user_id`, `team_type`, `card_slot_index`) VALUES
+(1, 1, 'CAMPAIGN', 1),
+(2, 1, 'CAMPAIGN', 2),
+(3, 1, 'CAMPAIGN', 3);
 
 --
 -- Chỉ mục cho các bảng đã đổ
@@ -429,6 +513,7 @@ ALTER TABLE `users`
 --
 ALTER TABLE `user_stage_progress`
   ADD PRIMARY KEY (`id`),
+  ADD UNIQUE KEY `unique_user_stage` (`user_id`,`stage_number`),
   ADD KEY `user_id` (`user_id`),
   ADD KEY `stage_number` (`stage_number`);
 
@@ -453,7 +538,7 @@ ALTER TABLE `card_definitions`
 -- AUTO_INCREMENT cho bảng `owned_cards`
 --
 ALTER TABLE `owned_cards`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=75;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=76;
 
 --
 -- AUTO_INCREMENT cho bảng `stage_enemies`
@@ -471,13 +556,13 @@ ALTER TABLE `users`
 -- AUTO_INCREMENT cho bảng `user_stage_progress`
 --
 ALTER TABLE `user_stage_progress`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=71;
 
 --
 -- AUTO_INCREMENT cho bảng `user_teams`
 --
 ALTER TABLE `user_teams`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
 -- Các ràng buộc cho các bảng đã đổ
@@ -500,8 +585,8 @@ ALTER TABLE `owned_cards`
 -- Các ràng buộc cho bảng `stage_enemies`
 --
 ALTER TABLE `stage_enemies`
-  ADD CONSTRAINT `fk_stage_enemies_stage` FOREIGN KEY (`stage_number`) REFERENCES `stages` (`stage_number`) ON DELETE CASCADE,
-  ADD CONSTRAINT `fk_stage_enemies_card` FOREIGN KEY (`card_id`) REFERENCES `card_definitions` (`card_id`) ON DELETE CASCADE;
+  ADD CONSTRAINT `fk_stage_enemies_card` FOREIGN KEY (`card_id`) REFERENCES `card_definitions` (`card_id`) ON DELETE CASCADE,
+  ADD CONSTRAINT `fk_stage_enemies_stage` FOREIGN KEY (`stage_number`) REFERENCES `stages` (`stage_number`) ON DELETE CASCADE;
 
 --
 -- Các ràng buộc cho bảng `user_stage_progress`

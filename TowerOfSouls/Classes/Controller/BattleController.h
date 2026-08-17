@@ -34,6 +34,14 @@ public:
 		return CardModel::getInstance().spawnEnemies(count);
 	}
 
+	vector<BattleCardData> getRNDCards(const vector<int>& costs) {
+		return CardModel::getInstance().getRNDCards(costs);
+	}
+
+	bool buyCards(int userID, const vector<BattleCardData>& cards) {
+		return CardModel::getInstance().buyCards(userID, cards);
+	}
+
 	BattleCardData getRNDCard(int cost) {
 		return CardModel::getInstance().getRNDCard(cost);
 	}

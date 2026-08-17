@@ -32,33 +32,11 @@ vector<BattleCardData> CardModel::getPlayerDeck(int userId) {
 }
 
 vector<BattleCardData> CardModel::getShopRoll(int round) {
-    vector<BattleCardData> shop;
-	for (int i = 0; i < 5; i++){
-	    int cost = getCostByRound(round);
-        auto& db = MySQLCli::getInstance();
-        string sql = "SELECT id, card_id, name, base_hp, base_atk, cost, role,card_type FROM card_definitions WHERE card_type='PLAYER' AND cost=" + to_string(cost) + "   ORDER BY RAND() LIMIT 1";
-
-        DBResult* res = db.query(sql);
-        if (res) {
-            char** row;
-            while ((row = res->fetchRow()) != nullptr) {
-                BattleCardData c;
-                c.id = stoi(row[0]);
-                c.card_id = row[1];
-                c.name = row[2];
-                c.level = 1;
-                c.star = 1;
-                c.hp = stoi(row[3]);
-                c.atk = stoi(row[4]);
-                c.cost = stoi(row[5]);
-                c.role = row[6];
-                c.type = row[7];
-                shop.push_back(c);
-            }
-            delete res;
-        }
+    vector<int> costs;
+    for (int i = 0; i < 5; i++) {
+        costs.push_back(getCostByRound(round));
     }
-    return shop;
+    return getRNDCards(costs);
 }
 
 int CardModel::getCostByRound(int round) {
@@ -153,6 +131,53 @@ BattleCardData CardModel::getRNDCard(int cost) {
         }
     }
     return c;
+}
+
+vector<BattleCardData> CardModel::getRNDCards(const vector<int>& costs) {
+    vector<BattleCardData> cards;
+    if (costs.empty()) return cards;
+
+    string sql = "";
+    for (size_t i = 0; i < costs.size(); i++) {
+        sql += "(SELECT id, card_id, name, base_hp, base_atk, cost, role, card_type FROM card_definitions WHERE card_type='PLAYER' AND cost=" + to_string(costs[i]) + " ORDER BY RAND() LIMIT 1)";
+        if (i < costs.size() - 1) sql += " UNION ALL ";
+    }
+
+    auto& db = MySQLCli::getInstance();
+    DBResult* res = db.query(sql);
+    if (res) {
+        char** row;
+        while ((row = res->fetchRow()) != nullptr) {
+            BattleCardData c;
+            c.id = stoi(row[0]);
+            c.card_id = row[1];
+            c.name = row[2];
+            c.level = 1;
+            c.star = 1;
+            c.hp = stoi(row[3]);
+            c.atk = stoi(row[4]);
+            c.cost = stoi(row[5]);
+            c.role = row[6];
+            c.type = row[7];
+            cards.push_back(c);
+        }
+        delete res;
+    }
+    return cards;
+}
+
+bool CardModel::buyCards(int userId, const vector<BattleCardData>& cards) {
+    if (cards.empty()) return true;
+
+    auto& db = MySQLCli::getInstance();
+    string sql = "INSERT INTO owned_cards (user_id, card_id, level, star, evolve_hp_bonus, evolve_atk_bonus) VALUES ";
+
+    for (size_t i = 0; i < cards.size(); i++) {
+        sql += "(" + to_string(userId) + ", '" + cards[i].card_id + "', 1, 1, 0, 0)";
+        if (i < cards.size() - 1) sql += ", ";
+    }
+
+    return db.execute(sql);
 }
 
 bool CardModel::buyCard(int userId, const BattleCardData& cardData) {

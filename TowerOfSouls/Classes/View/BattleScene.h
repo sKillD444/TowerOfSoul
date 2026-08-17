@@ -115,6 +115,7 @@ private:
 	void createReinforcementSlots();
 	void highlightElementBtn(cocos2d::Sprite* selectedBtn);
 	void loadMap();
+	void loadTeam();
 
 	//Game Logic
 	void startNewRound();
@@ -134,6 +135,7 @@ private:
 	void highLightLine(bool flag);
 	void spawnEnemies();
 	void spawnHiddenEnemy();
+	void spawnCampaignEnemies(int stageId, int wave);
 	Slot* findTarget(vector<Slot*>& targetSlots, Slot* attacker);
 	float synergyAtkMult(string role);
 	float culateAllDamage(Slot& attacker, Slot& target, bool isPlayerAttacking);
@@ -155,11 +157,6 @@ private:
 	int _currentStageId = 1;
 	int _currentWave = 1;
 	int _maxWaves = 1;
-
-	void loadTeam();
-	void spawnCampaignEnemies(int stageId, int wave);
-
-	//Test
 
 	CREATE_FUNC(BattleScene);
 };

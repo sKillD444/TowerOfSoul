@@ -70,11 +70,15 @@ vector<LeaderboardData> LeaderboardModel::getTop10PlayersBy(int criteria) {
     if (criteria == 0) {
         sql = "SELECT u.username, l.highest_floor FROM endless_leaderboard l JOIN users u ON l.user_id = u.id ORDER BY l.highest_floor DESC LIMIT 10";
     }
-    else if (criteria == 1) { 
+    else if (criteria == 1) {
         sql = "SELECT username, gems FROM users ORDER BY gems DESC LIMIT 10";
     }
     else if (criteria == 2) {
-        sql = "SELECT username, current_stage FROM users ORDER BY current_stage DESC LIMIT 10";
+        sql = "SELECT u.username, IFNULL(MAX(usp.stage_number), 1) as max_stage "
+            "FROM users u "
+            "LEFT JOIN user_stage_progress usp ON u.id = usp.user_id "
+            "GROUP BY u.id "
+            "ORDER BY max_stage DESC LIMIT 10";
     }
     else if (criteria == 3) {
         sql = "SELECT u.username, COUNT(o.user_id) as total_cards FROM users u JOIN owned_cards o ON u.id = o.user_id GROUP BY u.id ORDER BY total_cards DESC LIMIT 10";

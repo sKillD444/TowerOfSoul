@@ -81,7 +81,6 @@ void SettingScene::switchTab(int tabIndex)
     _tabPlayerLayer->setVisible(tabIndex == 2);
 }
 
-
 void SettingScene::buildAudioTab()
 {
     auto visibleSize = Director::getInstance()->getVisibleSize();
@@ -235,9 +234,9 @@ void SettingScene::buildGamePlayTab()
     _tempPlayerFrame = UserDefault::getInstance()->getStringForKey("PlayerFrameColor", "UI/Frame_Blue.png");
     _tempEnemyFrame = UserDefault::getInstance()->getStringForKey("EnemyFrameColor", "UI/Frame_Red.png");
 
-    _saveStatusLabel = Label::createWithTTF("", "fonts/04B_03__.ttf", 18);
+    _saveStatusLabel = Label::createWithTTF("", "fonts/04B_03__.ttf", 12);
     _saveStatusLabel->setColor(Color3B::GREEN);
-    _saveStatusLabel->setPosition(Vec2(centerX, centerY - 130.0f));
+    _saveStatusLabel->setPosition(Vec2(centerX, centerY - 70.0f));
     _tabGamePlayLayer->addChild(_saveStatusLabel);
 
     auto previewPlayer = Sprite::create(_tempPlayerFrame);
@@ -327,6 +326,36 @@ void SettingScene::buildGamePlayTab()
         _saveStatusLabel->setString("Saved Frame Colors!");
         });
     _tabGamePlayLayer->addChild(btnConfirm);
+
+    auto btnFullScreen = Button::create("UI/BTN/BG_BTN.png");
+    btnFullScreen->setTitleText("FULL SCREEN");
+    btnFullScreen->setTitleFontName("fonts/04B_03__.ttf");
+    btnFullScreen->setTitleFontSize(32);
+    btnFullScreen->setScale(0.22f);
+    btnFullScreen->setPosition(Vec2(centerX - 150.0f, centerY - 130.0f));
+    btnFullScreen->addClickEventListener([](Ref*) {
+        auto director = Director::getInstance();
+        auto glview = dynamic_cast<GLViewImpl*>(director->getOpenGLView());
+        if (glview) {
+            glview->setFullscreen();
+        }
+        });
+    _tabGamePlayLayer->addChild(btnFullScreen);
+
+    auto btnWindowed = Button::create("UI/BTN/BG_BTN.png");
+    btnWindowed->setTitleText("WINDOWED");
+    btnWindowed->setTitleFontName("fonts/04B_03__.ttf");
+    btnWindowed->setTitleFontSize(32);
+    btnWindowed->setScale(0.22f);
+    btnWindowed->setPosition(Vec2(centerX - 50.0f, centerY - 130.0f));
+    btnWindowed->addClickEventListener([](Ref*) {
+        auto director = Director::getInstance();
+        auto glview = dynamic_cast<GLViewImpl*>(director->getOpenGLView());
+        if (glview) {
+            glview->setWindowed(1600, 880);
+        }
+        });
+    _tabGamePlayLayer->addChild(btnWindowed);
 }
 
 void SettingScene::buildPlayerTab()

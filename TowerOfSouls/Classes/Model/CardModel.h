@@ -1,4 +1,4 @@
-﻿#ifndef __BATTLE_MODEL_H__
+﻿#ifndef __CARD_MODEL_H__
 #define __CARD_MODEL_H__
 
 #include <iostream>
@@ -21,7 +21,8 @@ public:
     vector<BattleCardData> getShopRoll(int round);
     int getCostByRound(int round);
     BattleCardData getRNDCard(int cost);
-
+    vector<BattleCardData> getRNDCards(const vector<int>& costs);
+    bool buyCards(int userId, const vector<BattleCardData>& cards);
 	bool buyCard(int userId, const BattleCardData& cardData);
     bool upgradeCardLevel(int ownedCardId, int newLevel, int bonusHp, int bonusAtk);
     vector<BattleCardData> spawnEnemies(int count);

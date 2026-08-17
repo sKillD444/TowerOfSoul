@@ -248,7 +248,7 @@ void ShopScene::RndCard(bool isGem, int rollCount)
 		else
 		{
 			CCLOG("Ko du gem");
-			_cardLayer->setVisible(false); 
+			_cardLayer->setVisible(false);
 			return;
 		}
 	}
@@ -268,13 +268,16 @@ void ShopScene::RndCard(bool isGem, int rollCount)
 		}
 	}
 
-	vector<BattleCardData> allCard;
+	vector<int> costs;
 	for (int i = 0; i < rollCount; i++)
 	{
-		int cost = rndCost(isGem);
-		BattleCardData card = _cController.getRNDCard(cost);
-		_cController.buyCard(p.id, card);
-		allCard.push_back(card);
+		costs.push_back(rndCost(isGem));
+	}
+
+	vector<BattleCardData> allCard = _cController.getRNDCards(costs);
+
+	if (!allCard.empty()) {
+		_cController.buyCards(p.id, allCard);
 	}
 
 	_cardLayer->removeAllChildren();

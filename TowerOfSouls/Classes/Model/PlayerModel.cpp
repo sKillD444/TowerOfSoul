@@ -3,7 +3,11 @@
 
 PlayerData PlayerModel::loadUser(int userID) {
 	auto& db = MySQLCli::getInstance();
-	string sql = "Select id, username, gold, gems, current_stage from users where id=" + to_string(userID);
+	string sql = "SELECT u.id, u.username, u.gold, u.gems, IFNULL(MAX(usp.stage_number), 1) as current_stage "
+		"FROM users u "
+		"LEFT JOIN user_stage_progress usp ON u.id = usp.user_id "
+		"WHERE u.id=" + to_string(userID) + " GROUP BY u.id";
+
 	DBResult* res = db.query(sql);
 
 	PlayerData p = { -1, "Unknown", 0, 0, 1 };
@@ -136,6 +140,13 @@ vector<int> PlayerModel::loadUserTeam(int userID, const string& teamType) {
 
 bool PlayerModel::updateCurrentStage(int newStage, int userID) {
 	auto& db = MySQLCli::getInstance();
-	string sql = "Update users set current_stage=" + to_string(newStage) + " where id = " + to_string(userID);
-	return db.execute(sql);
+
+	string sqlUpdate = "UPDATE user_stage_progress SET is_cleared = 1 WHERE user_id = "
+		+ to_string(userID) + " AND stage_number = " + to_string(newStage - 1);
+	db.execute(sqlUpdate);
+
+	string sqlInsert = "INSERT IGNORE INTO user_stage_progress (user_id, stage_number, is_cleared) "
+		"VALUES (" + to_string(userID) + ", " + to_string(newStage) + ", 0)";
+
+	return db.execute(sqlInsert);
 }
